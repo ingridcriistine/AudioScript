@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Logo from "@/app/assets/Logo.png";
-import Capa from "@/app/assets/bg-login.jpg";
+import Logo from "@/assets/Logo.png";
+import Capa from "@/assets/bg-login.jpg";
 
 export default function Home() {
   return (
