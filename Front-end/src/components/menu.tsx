@@ -49,7 +49,6 @@ export const Menu = () => {
                     </div>
                 </div>
             </div>
-
         </>
     );
 };
