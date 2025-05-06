@@ -65,8 +65,6 @@ const handleButtonClick = () => {
           {arquivos.map((arquivo) => (
             <li key={arquivo.id} className="text-sm flex justify-between items-center bg-gray-800 p-2 rounded-xl">
               {arquivo.name}
-
-              {/* Botão de excluir */}
               <button
                 onClick={() => handleExcluirArquivo(arquivo.id)}
                 className="text-red-500 hover:text-red-700 ml-2"
