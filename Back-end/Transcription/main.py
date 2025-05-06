@@ -3,13 +3,12 @@ import assemblyai as aai
 aai.settings.api_key = "79252efbe20e4ee39b6a0eb578504b5b"
 
 # audio_file = "./local_file.mp3"
-audio_file = "C:\\Users\\tiasz\\OneDrive\\Imagens\\Álbum de cámara\\WIN_20250505_16_25_32_Pro.mp4"
+file = "C:\\Users\\tiasz\\Downloads\\audioduaspessoas.mp3"
 
-config = aai.TranscriptionConfig(speech_model=aai.SpeechModel.best)
+config = aai.TranscriptionConfig(speaker_labels=True, language_code="pt", speech_model=aai.SpeechModel.nano)
 
-transcript = aai.Transcriber(config=config).transcribe(audio_file)
+transcript = aai.Transcriber().transcribe(file, config=config)
 
-if transcript.status == "error":
-  raise RuntimeError(f"Transcription failed: {transcript.error}")
+for utterance in transcript.utterances:
+  print(f"Speaker {utterance.speaker}: {utterance.text}")
 
-print(transcript.text)
