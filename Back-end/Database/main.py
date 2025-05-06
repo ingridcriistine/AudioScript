@@ -10,6 +10,7 @@ if __name__ == "__main__":
     sql = '''use audioscript_db'''
     cursor.execute(sql)
     
+    print(cursor.connection)
     statements = [
     """
     CREATE TABLE IF NOT EXISTS Empresa (
