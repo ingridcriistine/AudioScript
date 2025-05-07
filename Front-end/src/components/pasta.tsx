@@ -9,7 +9,7 @@ export default function Pasta({title} : any) {
         <Image className="w-[23px]" src={Folder} alt={"Ícone de adicionar"}/>
         <p>{title}</p>
       </div>
-      <Image className="w-[23px]" src={Points} alt={"Ícone de adicionar"}/>
+      <Image className="w-[23px] cursor-pointer" src={Points} alt={"Ícone de adicionar"}/>
     </div>
   );
 }
