@@ -30,7 +30,7 @@ export const Submenu = () => {
                         </Link>
                     </div>
                     <div className="flex p-5">
-                        <Link href={ROUTES.arqvScrt} className="flex items-center gap-2">
+                        <Link href={ROUTES.cola} className="flex items-center gap-2">
                             <Image src={iconHome} alt="colaboradores" width={20} height={20} />
                             <span className="text-amber-50 hover:border-b border-amber-50">Colaboradores</span>
                         </Link>
