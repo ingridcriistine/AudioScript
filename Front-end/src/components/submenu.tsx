@@ -24,13 +24,13 @@ export const Submenu = () => {
                         </Link>
                     </div>
                     <div className="flex p-5">
-                        <Link href={ROUTES.aqvScrt} className="flex items-center gap-2">
+                        <Link href={ROUTES.arqvScrt} className="flex items-center gap-2">
                             <Image src={iconSecret} alt="arquivos secretos"  width={20} height={20}  />
                             <span className="text-amber-50 hover:border-b border-amber-50">Arquivos Secretos</span>
                         </Link>
                     </div>
                     <div className="flex p-5">
-                        <Link href={ROUTES.aqvScrt} className="flex items-center gap-2">
+                        <Link href={ROUTES.arqvScrt} className="flex items-center gap-2">
                             <Image src={iconHome} alt="colaboradores" width={20} height={20} />
                             <span className="text-amber-50 hover:border-b border-amber-50">Colaboradores</span>
                         </Link>
