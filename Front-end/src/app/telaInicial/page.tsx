@@ -1,5 +1,6 @@
 "use client"
 import { Menu } from "@/components/menu";
+import { Submenu } from "@/components/submenu";
 import { useState } from "react";
 import { useRef } from "react";
 
@@ -47,7 +48,7 @@ const handleButtonClick = () => {
     <>
       <Menu/>
       <div className="flex">
-        {/* <Submenu/> */}
+        <Submenu/>
         <div className="w-[50%] p-8 text-white pt-[150px] pl-[80px]">
 
           <button onClick={handleButtonClick}
