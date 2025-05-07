@@ -8,21 +8,21 @@ import { ArquivoItem } from "@/components/upaloadArquivo";
 
 type Arquivo = {
   name: string;
-  id: string; // Adicionando um ID único para cada arquivo (pode ser o nome ou outro identificador)
+  id: string;
 };
 
 export default function TelaInicial() {
 
-const [arquivos, setArquivos] = useState<Arquivo[]>([]);
-const [restrito, setRestrito] = useState<"sim" | "nao" | "">(""); // Tipo para 'restrito'
+  const [arquivos, setArquivos] = useState<Arquivo[]>([]);
+  const [restrito, setRestrito] = useState<"sim" | "nao" | "">("");
 
-const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-const handleButtonClick = () => {
-  if (fileInputRef.current) {
-    fileInputRef.current.click(); // Dispara o clique no input invisível
-  }
-};
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
 
   // Função para lidar com a mudança de arquivos
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,25 +48,25 @@ const handleButtonClick = () => {
 
   return (
     <>
-      <Menu/>
+      <Menu />
       <div className="flex">
-        <Submenu/>
+        <Submenu />
         <div className="flex w-full">
           <div className="flex flex-col w-[50%] p-8 gap-8 text-white pt-[150px] pl-[80px]">
             <div className="flex flex-col w-[50%] ">
               <button onClick={handleButtonClick}
-                  className="bg-[#272727] rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-[#333333]"
+                className="bg-[#272727] rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-[#333333]"
               >
-                  Escolher arquivos
+                Escolher arquivos
               </button>
 
               {/* Input de arquivo oculto */}
               <input
-                  type="file"
-                  multiple
-                  onChange={handleFileChange}
-                  ref={fileInputRef}
-                  className="hidden"
+                type="file"
+                multiple
+                onChange={handleFileChange}
+                ref={fileInputRef}
+                className="hidden"
               />
 
               <ul className="mt-2 gap-2 flex flex-col w-full overflow-x-auto max-h-[280px]">
@@ -81,7 +81,7 @@ const handleButtonClick = () => {
               </ul>
 
             </div>
-              
+
             {/* Nome do arquivo transcrito */}
             <div className="flex flex-col gap-2 w-full">
               <label htmlFor="">Nome do arquivo transcrito</label>
@@ -123,9 +123,9 @@ const handleButtonClick = () => {
               Transcrever
             </button>
           </div>
-              
+
           <div className="w-[50%] flex pt-[150px] p-4 ">
-              <div className=" bg-white w-[80%]"></div>
+            <div className=" bg-white w-[80%]"></div>
           </div>
         </div>
       </div>
