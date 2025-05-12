@@ -20,6 +20,16 @@ export const Submenu = () => {
         setModal(true);
     }
 
+    const handleConfirm = () => {
+        if (senha === "senha") {
+            setModal(false);
+            window.location.href = ROUTES.arqvScrt;
+        } else {
+            alert("Senha incorreta!");
+        }
+    };
+
+
     return (
         <>
             <div className="pt-20">
@@ -50,22 +60,18 @@ export const Submenu = () => {
                     </div>
                 </div>
             </div>
-            
+
             {/* Modal */}
-            <div className={modal ? "fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30" : "hidden"}>
-                <div className="bg-zinc-800 p-8 rounded-lg shadow-lg flex items-center justify-center flex-col" >
-                    <div className="p-2 flex flex-col w-96 bg-opacity-50 z-50">
-                        <h2 className="text-xl font-semibold">Insira a senha de acesso</h2>
+            <div className={modal ? "fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50" : "hidden"}>
+                <div className="bg-zinc-800 p-8 rounded-lg shadow-lg flex items-center justify-center flex-col">
+                    <div className="p-2 flex flex-col w-96">
+                        <h2 className="text-xl font-semibold mb-4">Insira a senha de acesso</h2>
                         <form className="flex flex-col">
                             <input type="password" placeholder="Senha" className="border-2 rounded-[5px] p-1 mt-2 text-[13px]" value={senha} onChange={(e) => { setSenha(e.target.value) }} ></input>
                         </form>
                         <div className="flex justify-between mt-10">
-                            <button onClick={() => closeModal()} className="flex justify-center items-center h-8 text-[15px] bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600">Cancelar</button>
-                            <button onClick={() => setModal(false)} className="flex justify-center items-center h-8 text-[15px] bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">
-                                <Link href={ROUTES.arqvScrt} className="flex items-center">
-                                    <span className="text-amber-50 hover:border-b border-amber-50">Confirmar</span>
-                                </Link>
-                            </button>
+                            <button onClick={() => closeModal()} className="flex justify-center items-center h-8 text-[15px] bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 cursor-pointer">Cancelar</button>
+                            <button onClick={handleConfirm} className="flex justify-center items-center h-8 text-[15px] bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 cursor-pointer">Confirmar</button>
                         </div>
                     </div>
                 </div>
