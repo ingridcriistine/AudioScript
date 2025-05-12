@@ -1,3 +1,5 @@
+"use client"
+
 import Image from "next/image";
 import { ROUTES } from "@/constants/routes";
 import Link from "next/link";
