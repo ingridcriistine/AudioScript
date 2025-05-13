@@ -5,7 +5,6 @@ import os
 load_dotenv()
 
 APIKEY = os.getenv("ASSEMBLYAPIKEY")
-
 aai.settings.api_key = APIKEY
 
 file = "C:\\Users\\tiasz\\Downloads\\audioduaspessoas.mp3"
