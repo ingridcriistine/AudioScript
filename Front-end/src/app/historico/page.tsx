@@ -41,7 +41,7 @@ export default function Historico() {
                 <Submenu />
                 <div className="pt-[150px] pl-[80px] pr-[60px]">
                     <h2 className="text-[25px]">Histórico</h2>
-                    <button className="flex items-center gap-2 mt-10 mb-8" onClick={openModal}>
+                    <button className="flex items-center gap-2 mt-10 mb-8 cursor-pointer" onClick={openModal}>
                         <h3 className="text-[18px]">Pastas</h3>
                         <Image className="w-[20px] h-[20px] cursor-pointer" src={Add} alt={"Ícone de adicionar"} />
                     </button>
@@ -79,7 +79,7 @@ export default function Historico() {
                         <input
                             type="text"
                             placeholder="Nome da pasta"
-                            className="border-2 rounded-[5px] p-1 mt-2 text-[13px]"
+                            className="border-2 rounded-[5px] p-2 mt-2 text-[13px]"
                             value={nomePasta}
                             onChange={(e) => setNomePasta(e.target.value)}
                         />

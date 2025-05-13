@@ -35,7 +35,7 @@ export default function Colaboradores(){
                         <div className="flex w-[50%] relative">
                             <input
                                 type="text"
-                                className="flex border rounded-sm w-full p-2 h-8 pl-10 placeholder:opacity-60"
+                                className="flex border rounded-sm w-full  h-9 pl-10 placeholder:opacity-60"
                                 placeholder="Pesquisar colaborador"
                             />
                             <button
@@ -50,7 +50,7 @@ export default function Colaboradores(){
                                 />
                             </button>
                         </div>
-                        <button className="bg-orange-400 rounded-xl p-2 flex gap-2 items-center" onClick={openModal}>
+                        <button className="bg-orange-400 rounded-xl p-2 flex gap-2 items-center cursor-pointer" onClick={openModal}>
                             <h1>Adicionar funcionario </h1>
                             <Image src={add} alt="imagem de +" className="w-5"></Image>
                         </button>
@@ -68,7 +68,7 @@ export default function Colaboradores(){
                 </div>
 
                 {modal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-sm">
                     <div className="bg-zinc-800 p-8 rounded-lg shadow-lg flex items-center justify-center flex-col">
                     <div className="p-2 flex flex-col w-96">
                         <h2 className="text-xl font-semibold mb-4">Novo Colaborador</h2>
@@ -76,21 +76,21 @@ export default function Colaboradores(){
                             <input
                                 type="number"
                                 placeholder="Código"
-                                className="border-1 rounded-[5px] p-1 mt-2 text-[13px]"
+                                className="border-1 rounded-[5px] p-2 mt-2 text-[13px]"
                                 value={codColaborador}
                                 onChange={(e) => setcodColaborador(e.target.value)}
                             />
                             <input
                                 type="text"
                                 placeholder="Nome"
-                                className="border-1 rounded-[5px] p-1 mt-2 text-[13px]"
+                                className="border-1 rounded-[5px] p-2 mt-2 text-[13px]"
                                 value={nomeColaborador}
                                 onChange={(e) => setnomeColaborador(e.target.value)}
                             />
                             <input
                                 type="email"
                                 placeholder="Email"
-                                className="border-1 rounded-[5px] p-1 mt-2 text-[13px]"
+                                className="border-1 rounded-[5px] p-2 mt-2 text-[13px]"
                                 value={emailColaborador}
                                 onChange={(e) => setemailColaborador(e.target.value)}
                             />

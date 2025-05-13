@@ -1,6 +1,6 @@
 export enum ROUTES{
     login = "/login",
-    home = "/home",
+    home = "/telaInicial",
     hist = "/historico",
     arqvScrt =  "/arquivoSecreto",
     cola = "/colaboradores"

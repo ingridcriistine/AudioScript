@@ -12,15 +12,7 @@ import { useState } from "react";
 export const Submenu = () => {
 
     const [modal, setModal] = useState(false);
-    const [senha, setSenha] = useState<string>();
-
-    const closeModal = () => {
-        setModal(false);
-    }
-
-    const openModal = () => {
-        setModal(true);
-    }
+    const [senha, setSenhaArquivo] = useState<string>();
 
     const handleConfirm = () => {
         if (senha === "senha") {
@@ -30,6 +22,14 @@ export const Submenu = () => {
             alert("Senha incorreta!");
         }
     };
+    
+    const closeModal = () => {
+        setModal(false);
+    }
+
+    const openModal = () => {
+        setModal(true);
+    }
 
 
     return (
@@ -51,7 +51,7 @@ export const Submenu = () => {
                     <div className="flex p-5">
                         <h2 className="flex items-center gap-2" onClick={openModal}>
                             <Image src={iconSecret} alt="arquivos secretos" width={20} height={20} />
-                            <span className="text-amber-50 hover:border-b border-amber-50">Arquivos Secretos</span>
+                            <span className="text-amber-50 hover:border-b border-amber-50 cursor-pointer">Arquivos Secretos</span>
                         </h2>
                     </div>
                     <div className="flex p-5">
@@ -64,20 +64,38 @@ export const Submenu = () => {
             </div>
 
             {/* Modal */}
-            <div className={modal ? "fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50" : "hidden"}>
-                <div className="bg-zinc-800 p-8 rounded-lg shadow-lg flex items-center justify-center flex-col">
+           {modal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+                    <div className="bg-zinc-800 p-8 rounded-lg shadow-lg flex items-center justify-center flex-col">
                     <div className="p-2 flex flex-col w-96">
                         <h2 className="text-xl font-semibold mb-4">Insira a senha de acesso</h2>
                         <form className="flex flex-col">
-                            <input type="password" placeholder="Senha" className="border-2 rounded-[5px] p-1 mt-2 text-[13px]" value={senha} onChange={(e) => { setSenha(e.target.value) }} ></input>
+                            <input
+                                type="password"
+                                placeholder="Senha"
+                                className="border-1 rounded-[5px] p-2 mt-2 text-[13px]"
+                                value={senha}
+                                onChange={(e) => setSenhaArquivo(e.target.value)}
+                            />
                         </form>
                         <div className="flex justify-between mt-10">
-                            <button onClick={() => closeModal()} className="flex justify-center items-center h-8 text-[15px] bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 cursor-pointer">Cancelar</button>
-                            <button onClick={handleConfirm} className="flex justify-center items-center h-8 text-[15px] bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 cursor-pointer">Confirmar</button>
+                        <button
+                            onClick={closeModal}
+                            className="flex justify-center items-center h-8 text-[15px] bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 cursor-pointer"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            onClick={closeModal}
+                            className="flex justify-center items-center h-8 text-[15px] bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 cursor-pointer"
+                        >
+                            Confirmar
+                        </button>
                         </div>
                     </div>
+                    </div>
                 </div>
-            </div>
+                )}
         </>
     );
 };
