@@ -1,1 +1,5 @@
+## front
 npm install primereact
+
+## back
+pip install flask flask-cors flask-sqlalchemy pymysql
