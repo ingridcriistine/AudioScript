@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from 'react';
 import Image from "next/image";
@@ -12,6 +12,7 @@ import Arquivo from "@/components/arquivo";
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import './custom.css';
+import Modal from '@/components/modal';
 
 export default function Historico() {
 
@@ -40,7 +41,7 @@ export default function Historico() {
                 <Submenu />
                 <div className="pt-[150px] pl-[80px] pr-[60px]">
                     <h2 className="text-[25px]">Histórico</h2>
-                    <button className="flex items-center gap-2 mt-10 mb-8" onClick={() => openModal()}>
+                    <button className="flex items-center gap-2 mt-10 mb-8 cursor-pointer" onClick={openModal}>
                         <h3 className="text-[18px]">Pastas</h3>
                         <Image className="w-[20px] h-[20px] cursor-pointer" src={Add} alt={"Ícone de adicionar"} />
                     </button>
@@ -69,20 +70,39 @@ export default function Historico() {
                 </div>
 
                 {/* Modal */}
-                <div className={modal ? "fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50" : "hidden"}>
+                {modal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
                     <div className="bg-zinc-800 p-8 rounded-lg shadow-lg flex items-center justify-center flex-col">
-                        <div className="p-2 flex flex-col w-96">
-                            <h2 className="text-xl font-semibold mb-4">Nova Pasta</h2>
-                            <form className="flex flex-col">
-                                <input type="text" placeholder="Nome da pasta" className="border-2 rounded-[5px] p-1 mt-2 text-[13px]" value={nomePasta} onChange={(e) => { setNomePasta(e.target.value) }} ></input>
-                            </form>
-                            <div className="flex justify-between mt-10">
-                                <button onClick={() => closeModal()} className="flex justify-center items-center h-8 text-[15px] bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 cursor-pointer">Cancelar</button>
-                                <button onClick={() => closeModal()} className="flex justify-center items-center h-8 text-[15px] bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 cursor-pointer">Confirmar</button>
-                            </div>
+                    <div className="p-2 flex flex-col w-96">
+                        <h2 className="text-xl font-semibold mb-4">Nova Pasta</h2>
+                        <form className="flex flex-col">
+                        <input
+                            type="text"
+                            placeholder="Nome da pasta"
+                            className="border-2 rounded-[5px] p-2 mt-2 text-[13px]"
+                            value={nomePasta}
+                            onChange={(e) => setNomePasta(e.target.value)}
+                        />
+                        </form>
+                        <div className="flex justify-between mt-10">
+                        <button
+                            onClick={closeModal}
+                            className="flex justify-center items-center h-8 text-[15px] bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 cursor-pointer"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            onClick={closeModal}
+                            className="flex justify-center items-center h-8 text-[15px] bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 cursor-pointer"
+                        >
+                            Confirmar
+                        </button>
                         </div>
                     </div>
+                    </div>
                 </div>
+                )}
+
             </div>
         </div>
     );
