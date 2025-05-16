@@ -1,6 +1,5 @@
 from flask import Flask, jsonify
 # from flask_cors import CORS
-# from flask_sqlalchemy import SQLAlchemy
 import os
 import pymysql
 from dotenv import load_dotenv
@@ -26,15 +25,6 @@ def connect_to_aws_rds():
 cursor, db =connect_to_aws_rds()
 
 print(cursor.connection)
-
-
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:minhasenha@meubanco.abcdefg123.us-east-1.rds.amazonaws.com:3306/meubanco'
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# db = SQLAlchemy(app)
-
-@app.route("/members")
-def member():
-    return {"member" : ["ingrid", "helena", "mariana", "milena", "juliana"]}
 
 if __name__ == '__main__':
     app.run(debug=True)
