@@ -57,5 +57,5 @@ if __name__ == "__main__":
     """
 ]
 
-    for statement in statements:
-        cursor.execute(statement)
+    # for statement in statements:
+    #     cursor.execute(statement)

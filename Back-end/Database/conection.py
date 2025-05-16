@@ -12,7 +12,7 @@ def connect_to_aws_rds():
     db = pymysql.connect(
         host=HOST, 
         user=USER, 
-        password=PASSWORD
+        password=PASSWORD 
         )
     cursor = db.cursor()
     return cursor, db
