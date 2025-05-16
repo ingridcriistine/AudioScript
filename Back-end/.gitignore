@@ -1,0 +1,16 @@
+
+
+*.pyc
+.env
+
+#terraform files created after you init, plan and apply
+.terraform*
+terraform.tfstate
+
+#pdf files created as testing output
+output*.pdf
+testing.pdf
+
+text.txt
+
+__pycache__/
