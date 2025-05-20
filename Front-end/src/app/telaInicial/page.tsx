@@ -16,6 +16,7 @@ export default function TelaInicial() {
 
   const [arquivos, setArquivos] = useState<Arquivo[]>([]);
   const [restrito, setRestrito] = useState<"sim" | "nao" | "">("");
+  const [filename, setFilename] = useState<string>("");
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -45,7 +46,6 @@ export default function TelaInicial() {
   };
 
   const handleUpload = async () => {
-    console.log("Funçao");
     const formData = new FormData();
 
     if (fileInputRef.current?.files) {
@@ -54,11 +54,14 @@ export default function TelaInicial() {
         formData.append('files', files[i]); // nome "files" deve bater com o backend
       }
     }
-
+    const customFileName = document.getElementById('customFileName') as HTMLInputElement
+    formData.append('user-file-name', customFileName.value)
     formData.append('restrito', restrito);
+    console.log(customFileName.value)
+    console.log(restrito)
 
     try {
-      const response = await fetch('http://localhost:5000/api/uploads', {
+      const response = await fetch(ROUTES.upload_files, {
         method: 'POST',
         body: formData
       })
@@ -118,6 +121,7 @@ export default function TelaInicial() {
                 <input
                   type="text"
                   className="flex text-white border rounded-sm p-1 border-amber-50 w-[50%]"
+                  id="customFileName"
                 />
               </div>
 

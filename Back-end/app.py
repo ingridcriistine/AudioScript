@@ -14,7 +14,7 @@ PASSWORD = os.getenv("PWDAWSRDS")
 
 app = Flask(__name__)
 CORS(app)
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = 'mp3-files'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -28,7 +28,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 #     result = cursor.fetchall()
 #     return jsonify(result)
 
-@app.route('/api/uploads', methods=['POST'])
+@app.route('/api/uploadfiles', methods=['POST'])
 def upload_files():
     restrito = request.form.get('restrito') 
     files = request.files.getlist('files')  
