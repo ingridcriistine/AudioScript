@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRef } from "react";
 import Lixeira from "@/assets/bin.png";
 import { ArquivoItem } from "@/components/upaloadArquivo";
+import { ROUTES } from "@/constants/routes";
 
 type Arquivo = {
   name: string;
@@ -24,7 +25,6 @@ export default function TelaInicial() {
     }
   };
 
-  // Função para lidar com a mudança de arquivos
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       // Converte FileList para um array e atualiza o estado, gerando um ID único para cada arquivo
@@ -36,99 +36,129 @@ export default function TelaInicial() {
     }
   };
 
-  // Função para excluir um arquivo
   const handleExcluirArquivo = (id: string) => {
     setArquivos((prevArquivos) => prevArquivos.filter((arquivo) => arquivo.id !== id));
   };
 
-  // Função para lidar com a mudança do estado de 'restrito'
   const handleRestritoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRestrito(e.target.value as "sim" | "nao");
   };
 
-  return (
-    <>
-      <Menu />
-      <div className="flex">
-        <Submenu />
-        <div className="flex w-full">
-          <div className="flex flex-col w-[50%] p-8 gap-8 text-white pt-[150px] pl-[80px]">
-            <div className="flex flex-col w-[50%] ">
-              <button onClick={handleButtonClick}
-                className="bg-[#272727] rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-[#333333]"
-              >
-                Escolher arquivos
-              </button>
+  const handleUpload = async () => {
+    console.log("Funçao");
+    const formData = new FormData();
 
-              {/* Input de arquivo oculto */}
-              <input
-                type="file"
-                multiple
-                onChange={handleFileChange}
-                ref={fileInputRef}
-                className="hidden"
-              />
+    if (fileInputRef.current?.files) {
+      const files = fileInputRef.current.files;
+      for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]); // nome "files" deve bater com o backend
+      }
+    }
 
-              <ul className="mt-2 gap-2 flex flex-col w-full overflow-x-auto max-h-[280px]">
-                {arquivos.map((arquivo) => (
-                  <ArquivoItem
-                    key={arquivo.id}
-                    id={arquivo.id}
-                    name={arquivo.name}
-                    onExcluir={handleExcluirArquivo}
-                  />
-                ))}
-              </ul>
+    formData.append('restrito', restrito);
 
-            </div>
+    try {
+      const response = await fetch('http://localhost:3000/api/uploads', {
+        method: 'POST',
+        body: formData
+      })
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const result = await response.json();
+        console.log("json result: " + result)
+      }
+      else {
+        const text = await response.text()
+        console.log("text result: " + text)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+    }
 
-            {/* Nome do arquivo transcrito */}
-            <div className="flex flex-col gap-2 w-full">
-              <label htmlFor="">Nome do arquivo transcrito</label>
-              <input
-                type="text"
-                className="flex text-white border rounded-sm p-1 border-amber-50 w-[50%]"
-              />
-            </div>
+    return (
+      <>
+        <Menu />
+        <div className="flex">
+          <Submenu />
+          <div className="flex w-full">
+            <div className="flex flex-col w-[50%] p-8 gap-8 text-white pt-[150px] pl-[80px]">
+              <div className="flex flex-col w-[50%] ">
+                <button onClick={handleButtonClick}
+                  className="bg-[#272727] rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-[#333333]"
+                >
+                  Escolher arquivos
+                </button>
 
-            {/* Seleção de arquivo restrito */}
-            <div className="flex gap-2 mt-4">
-              <h1>Arquivo Restrito: </h1>
-              <div className="flex gap-5">
-                <label>
-                  <input
-                    type="radio"
-                    name="restrito"
-                    value="sim"
-                    checked={restrito === "sim"}
-                    onChange={handleRestritoChange}
-                  />
-                  Sim
-                </label>
+                {/* Input de arquivo oculto */}
+                <input
+                  type="file"
+                  multiple
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                  className="hidden"
+                />
 
-                <label>
-                  <input
-                    type="radio"
-                    name="restrito"
-                    value="nao"
-                    checked={restrito === "nao"}
-                    onChange={handleRestritoChange}
-                  />
-                  Não
-                </label>
+                <ul className="mt-2 gap-2 flex flex-col w-full overflow-x-auto max-h-[280px]">
+                  {arquivos.map((arquivo) => (
+                    <ArquivoItem
+                      key={arquivo.id}
+                      id={arquivo.id}
+                      name={arquivo.name}
+                      onExcluir={handleExcluirArquivo}
+                    />
+                  ))}
+                </ul>
+
               </div>
+
+              {/* Nome do arquivo transcrito */}
+              <div className="flex flex-col gap-2 w-full">
+                <label htmlFor="">Nome do arquivo transcrito</label>
+                <input
+                  type="text"
+                  className="flex text-white border rounded-sm p-1 border-amber-50 w-[50%]"
+                />
+              </div>
+
+              {/* Seleção de arquivo restrito */}
+              <div className="flex gap-2 mt-4">
+                <h1>Arquivo Restrito: </h1>
+                <div className="flex gap-5">
+                  <label>
+                    <input
+                      type="radio"
+                      name="restrito"
+                      value="sim"
+                      checked={restrito === "sim"}
+                      onChange={handleRestritoChange}
+                    />
+                    Sim
+                  </label>
+
+                  <label>
+                    <input
+                      type="radio"
+                      name="restrito"
+                      value="nao"
+                      checked={restrito === "nao"}
+                      onChange={handleRestritoChange}
+                    />
+                    Não
+                  </label>
+                </div>
+              </div>
+
+              <button className="bg-amber-600 p-3 rounded-xl cursor-pointer w-[50%]" onClick={handleUpload}>
+                Transcrever
+              </button>
             </div>
 
-            <button className="bg-amber-600 p-3 rounded-xl cursor-pointer w-[50%]">
-              Transcrever
-            </button>
-          </div>
-
-          <div className="w-[50%] flex pt-[150px] p-4 ">
-            <div className=" bg-white w-[80%]"></div>
+            <div className="w-[50%] flex pt-[150px] p-4 ">
+              <div className=" bg-white w-[80%]"></div>
+            </div>
           </div>
         </div>
-      </div>
-    </>
-  );
+      </>
+    );
 }

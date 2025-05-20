@@ -3,5 +3,7 @@ export enum ROUTES{
     home = "/telaInicial",
     hist = "/historico",
     arqvScrt =  "/arquivoSecreto",
-    cola = "/colaboradores"
+    cola = "/colaboradores",
+    uploads =  "http://localhost:3000/api/uploads",
+    teste = "/teste"
 }

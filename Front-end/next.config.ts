@@ -22,7 +22,12 @@ const nextConfig: NextConfig = {
         {
           source: "/colaboradores",
           destination:"/colaboradores"
+        },
+        {
+          source: "/teste",
+          destination:"/teste"
         }
+       
       ];
   }
 };
