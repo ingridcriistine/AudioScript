@@ -58,7 +58,7 @@ export default function TelaInicial() {
     formData.append('restrito', restrito);
 
     try {
-      const response = await fetch('http://localhost:3000/api/uploads', {
+      const response = await fetch('http://localhost:5000/api/uploads', {
         method: 'POST',
         body: formData
       })
