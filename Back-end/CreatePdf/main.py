@@ -32,12 +32,10 @@ def add_paragraphs(doc, transcription: aai.Transcript):
     #         doc.append(Spacer(1, 20))
     return doc
 
-if __name__ == "__main__":
+def create_pdf(file_name: str):
     document = []
     transcription = transcript_audio(file)
-
     document = add_title(document)
-
-    SimpleDocTemplate('output3.pdf', pagesize=letter,
+    SimpleDocTemplate(f'{file_name}.pdf', pagesize=letter,
                       rightMargin=12, leftMargin=12,
                       topMargin=12, bottomMargin=6).build(add_paragraphs(document, transcription))

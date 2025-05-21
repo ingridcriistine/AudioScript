@@ -20,15 +20,16 @@ def connect_to_aws_rds():
     return cursor, db
 
 def connect_to_mysql():
-    cnx = mysql.connector.connect(user='matias',
-                                    password='root',
-                                    host='127.0.0.1',
-                                    database='audioscript')
-    # except mysql.connector.Error as e:
-    #     if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-    #         print("Something is wrong with your user name or password")
-    #     elif e.errno == errorcode.ER_BAD_DB_ERROR:
-    #         print("Database does not exist")
-    #     else:
-    #         print(e)
+    try:
+        cnx = mysql.connector.connect(user='matias',
+                                        password='root',
+                                        host='127.0.0.1',
+                                        database='audioscript')
+    except mysql.connector.Error as e:
+        if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your user name or password")
+        elif e.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist")
+        else:
+            print(e)
     return cnx

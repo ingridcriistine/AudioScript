@@ -1,11 +1,14 @@
 from flask import Flask, jsonify, request
-# from flask_cors import CORS
+from flask_cors import CORS
 import os
-import pymysql
 from dotenv import load_dotenv
-import mysql.connector
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
+from Conversor.main import transform_mp4_to_mp3
+from Database.conection import connect_to_mysql
+from CreatePdf.main import create_pdf
+from AwsS3Operations.main import upload_file, download_file, delete_file
+from Transcription.main import transcribe_audio
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
@@ -18,8 +21,6 @@ UPLOAD_FOLDER = 'mp3-files'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-# CORS(app)
-
 
 
 # @app.route("/api/empresas", methods=["GET"])
@@ -31,6 +32,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 @app.route('/api/uploadfiles', methods=['POST'])
 def upload_files():
     restrito = request.form.get('restrito') 
+    user_file_name = request.form.get('user-file-name')
     files = request.files.getlist('files')  
     saved_files = []
     for f in files:
@@ -38,8 +40,11 @@ def upload_files():
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         f.save(filepath)
         saved_files.append(filename)
+
     
-    return jsonify({"message": f"{len(files)} arquivo(s) recebidos", "arquivos": saved_files})
+    
+    return jsonify({"message": f"{len(files)} arquivo(s) recebidos", "arquivos": saved_files, "restrito": restrito, "file_name": user_file_name})
+
 
 
 if __name__ == "__main__":

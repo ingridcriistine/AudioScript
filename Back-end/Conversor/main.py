@@ -1,7 +1,7 @@
 import moviepy as mp
 import re
 from time import timezone
-
+from Database.conection import connect_to_mysql
 
 PATH=r"/home/matiaszuniga/Downloads/videoone.mp4"
 
@@ -16,7 +16,7 @@ def get_path_without_extension(file_path: str):
     path_without_extension = file_path.split('.')
     return path_without_extension[0]
 
-def transcribe_mp4_to_mp3(file_path):
+def transform_mp4_to_mp3(file_path):
     clip = mp.VideoFileClip(file_path)
     file_path_without_extension = get_path_without_extension(str(file_path))
     file_path_with_extension = file_path_without_extension + ".mp3"

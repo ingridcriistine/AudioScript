@@ -7,7 +7,7 @@ load_dotenv()
 APIKEY = os.getenv("ASSEMBLYAPIKEY")
 aai.settings.api_key = APIKEY
 
-def transcript_audio(audio_file: str) -> aai.Transcript:
+def transcribe_audio(audio_file: str) -> aai.Transcript:
   config = aai.TranscriptionConfig(speaker_labels=True, language_code="pt", speech_model=aai.SpeechModel.nano)
   transcript = aai.Transcriber().transcribe(audio_file, config=config)
   return transcript
