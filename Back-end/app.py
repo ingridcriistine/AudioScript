@@ -34,16 +34,14 @@ def upload_files():
     restrito = request.form.get('restrito') 
     user_file_name = request.form.get('user-file-name')
     files = request.files.getlist('files')  
-    saved_files = []
     for f in files:
         filename = secure_filename(f.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         f.save(filepath)
-        saved_files.append(filename)
 
     
     
-    return jsonify({"message": f"{len(files)} arquivo(s) recebidos", "arquivos": saved_files, "restrito": restrito, "file_name": user_file_name})
+    return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restrito, "file_name": user_file_name})
 
 
 
