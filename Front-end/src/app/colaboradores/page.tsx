@@ -12,9 +12,9 @@ export default function Colaboradores(){
     const [selectFormat, setSelectFormat] = useState(null);
     const [date, setDate] = useState<Date | null>(null);
     const [modal, setModal] = useState(false);
-    const [nomeColaborador, setnomeColaborador] = useState("");
-    const [codColaborador, setcodColaborador] = useState("");
-    const [emailColaborador, setemailColaborador] = useState("");
+    const [nomeColaborador, setNomeColaborador] = useState("");
+    const [codColaborador, setCodColaborador] = useState("");
+    const [emailColaborador, setEmailColaborador] = useState("");
 
     const closeModal = () => {
         setModal(false);
@@ -78,21 +78,21 @@ export default function Colaboradores(){
                                 placeholder="Código"
                                 className="border-1 rounded-[5px] p-2 mt-2 text-[13px]"
                                 value={codColaborador}
-                                onChange={(e) => setcodColaborador(e.target.value)}
+                                onChange={(e) => setCodColaborador(e.target.value)}
                             />
                             <input
                                 type="text"
                                 placeholder="Nome"
                                 className="border-1 rounded-[5px] p-2 mt-2 text-[13px]"
                                 value={nomeColaborador}
-                                onChange={(e) => setnomeColaborador(e.target.value)}
+                                onChange={(e) => setNomeColaborador(e.target.value)}
                             />
                             <input
                                 type="email"
                                 placeholder="Email"
                                 className="border-1 rounded-[5px] p-2 mt-2 text-[13px]"
                                 value={emailColaborador}
-                                onChange={(e) => setemailColaborador(e.target.value)}
+                                onChange={(e) => setEmailColaborador(e.target.value)}
                             />
                         </form>
                         <div className="flex justify-between mt-10">
