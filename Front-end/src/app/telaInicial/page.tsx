@@ -51,7 +51,7 @@ export default function TelaInicial() {
     if (fileInputRef.current?.files) {
       const files = fileInputRef.current.files;
       for (let i = 0; i < files.length; i++) {
-        formData.append('files', files[i]); // nome "files" deve bater com o backend
+        formData.append('files', files[i]); 
       }
     }
     const customFileName = document.getElementById('customFileName') as HTMLInputElement
