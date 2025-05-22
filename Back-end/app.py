@@ -7,9 +7,9 @@ from werkzeug.utils import secure_filename
 from Conversor.main import transform_mp4_to_mp3
 from Database.conection import connect_to_mysql
 from CreatePdf.main import create_pdf
-from AwsS3Operations.main import upload_file, download_file, delete_file
+from AwsS3Operations.main import upload_file_to_s3, download_file_from_s3, delete_file_from_s3
 from Transcription.main import transcribe_audio
-from datetime import date
+from datetime import datetime
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
@@ -17,6 +17,7 @@ USER = os.getenv("USERAWSRDS")
 PASSWORD = os.getenv("PWDAWSRDS")
 UPLOAD_FOLDER = 'mp3-files'
 MP3_FOLDER_PATH = f'{UPLOAD_FOLDER}/'
+AWS_BUCKET = 'audioscript-s3-bucket'
 
 app = Flask(__name__)
 CORS(app)
@@ -43,15 +44,18 @@ def upload_files():
         f.save(filepath)
         print(f'file saved on /{UPLOAD_FOLDER}/{f.filename}')
 
-    files = os.listdir(MP3_FOLDER_PATH)
-
-    today = date.today()
-    for file in files:
+    today = datetime.now()
+    date = str(today.date())
+    time = str(today.time())
+    mp3_files = os.listdir(MP3_FOLDER_PATH)
+    all_transcriptions = []
+    for file in mp3_files:
+        timestamp = f'{date}_{time}' 
         transcription = transcribe_audio(f'{MP3_FOLDER_PATH}/{file}')
+        all_transcriptions.append(transcription)
 
-        create_pdf(transcription, f'{user_file_name}-{today}')
-        
-    
+    pdf_transcription_file = create_pdf(all_transcriptions, f'{user_file_name}-{timestamp}')
+    # upload_file_to_s3(pdf_transcription_file, AWS_BUCKET, pdf_transcription_file)
     return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restrito, "file_name": user_file_name})
 
 

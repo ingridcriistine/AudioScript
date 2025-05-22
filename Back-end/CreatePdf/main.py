@@ -20,10 +20,11 @@ def add_title(doc):
     return doc
 
 
-def add_paragraphs(doc, transcription: aai.Transcript):
-    for utterance in transcription.utterances:
-        doc.append(Paragraph(f"-{utterance.speaker}: "))
-        doc.append(Paragraph(utterance.text))
+def add_paragraphs(doc, transcriptions: list[aai.Transcript]):
+    for transcription in transcriptions:
+        for utterance in transcription.utterances:
+            doc.append(Paragraph(f"-{utterance.speaker}: "))
+            doc.append(Paragraph(utterance.text))
     # with open('Files-creation/Pdf/text.txt') as txt:
     #     for line in txt.read().split('\n'):
     #         print(line)
@@ -31,12 +32,12 @@ def add_paragraphs(doc, transcription: aai.Transcript):
     #         doc.append(Spacer(1, 20))
     return doc
 
-def create_pdf(transcription,file_name: str):
+def create_pdf(transcriptions,file_name: str):
     document = []
     document = add_title(document)
     SimpleDocTemplate(f'{file_name}.pdf', pagesize=letter,
-                      rightMargin=12, leftMargin=12,
-                      topMargin=12, bottomMargin=6).build(add_paragraphs(document, transcription))
+                    rightMargin=12, leftMargin=12,
+                    topMargin=12, bottomMargin=6).build(add_paragraphs(document, transcriptions))
     
     print(f'Pdf file {file_name} created')
-    return True
+    return f'{file_name}.pdf'
