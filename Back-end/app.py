@@ -9,18 +9,21 @@ from Database.conection import connect_to_mysql
 from CreatePdf.main import create_pdf
 from AwsS3Operations.main import upload_file, download_file, delete_file
 from Transcription.main import transcribe_audio
+from datetime import date
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
 USER = os.getenv("USERAWSRDS")
 PASSWORD = os.getenv("PWDAWSRDS")
+UPLOAD_FOLDER = 'mp3-files'
+MP3_FOLDER_PATH = f'{UPLOAD_FOLDER}/'
 
 app = Flask(__name__)
 CORS(app)
-UPLOAD_FOLDER = 'mp3-files'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 
 
 # @app.route("/api/empresas", methods=["GET"])
@@ -38,8 +41,16 @@ def upload_files():
         filename = secure_filename(f.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         f.save(filepath)
+        print(f'file saved on /{UPLOAD_FOLDER}/{f.filename}')
 
-    
+    files = os.listdir(MP3_FOLDER_PATH)
+
+    today = date.today()
+    for file in files:
+        transcription = transcribe_audio(f'{MP3_FOLDER_PATH}/{file}')
+
+        create_pdf(transcription, f'{user_file_name}-{today}')
+        
     
     return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restrito, "file_name": user_file_name})
 

@@ -5,7 +5,6 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from dotenv import load_dotenv
 import assemblyai as aai
-from Transcription.main import transcript_audio
 
 
 file = "/home/matiaszuniga/Downloads/audiotest.mp3"
@@ -32,10 +31,12 @@ def add_paragraphs(doc, transcription: aai.Transcript):
     #         doc.append(Spacer(1, 20))
     return doc
 
-def create_pdf(file_name: str):
+def create_pdf(transcription,file_name: str):
     document = []
-    transcription = transcript_audio(file)
     document = add_title(document)
     SimpleDocTemplate(f'{file_name}.pdf', pagesize=letter,
                       rightMargin=12, leftMargin=12,
                       topMargin=12, bottomMargin=6).build(add_paragraphs(document, transcription))
+    
+    print(f'Pdf file {file_name} created')
+    return True
