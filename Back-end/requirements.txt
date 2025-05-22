@@ -1,0 +1,10 @@
+Flask
+flask-cors
+python-dotenv
+Werkzeug
+boto3
+botocore
+moviepy
+reportlab
+mysql-connector-python
+assemblyai
