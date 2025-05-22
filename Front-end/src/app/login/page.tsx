@@ -52,7 +52,7 @@ export default function Home() {
           <h2 className="text-[#FF8502] font-bold text-[30px] mb-6">Login</h2>
           <input placeholder="Código da empresa" className="border w-[400px] border-[rgb(255,133,2)] text-[16px] rounded-md p-2 pl-5 placeholder:opacity-60" value={codEmpresa} onChange={(event) => { setCodEmpresa(event?.target.value) }}></input>
           <input placeholder="Seu código de verificação" className="border w-[400px] border-[#FF8502] text-[16px] rounded-md p-2 pl-5 placeholder:opacity-60" value={codFuncionario} onChange={(event) => { setCodFuncionario(event?.target.value) }}></input>
-          <button className="bg-[#FF8502] font-bold p-1 pl-6 pr-6 rounded-md mt-6 opacity-80 cursor-pointer hover:opacity-100">Entrar</button>
+          <button className="bg-[#FF8502] font-bold p-1 pl-6 pr-6 rounded-md mt-6 opacity-80 cursor-pointer hover:opacity-100" onClick={() => {Logar()}}>Entrar</button>
         </div>
       </div>
     </div>
