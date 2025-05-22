@@ -4,7 +4,6 @@ import Image from "next/image";
 import Logo from "@/assets/Logo.png";
 import Capa from "@/assets/bg-login.jpg";
 import { useState } from "react";
-import { ROUTES } from "@/constants/routes";
 
 export default function Home() {
 
