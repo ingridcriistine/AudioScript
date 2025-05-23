@@ -49,13 +49,17 @@ def upload_files():
     time = str(today.time())
     mp3_files = os.listdir(MP3_FOLDER_PATH)
     all_transcriptions = []
-    for file in mp3_files:
-        timestamp = f'{date}_{time}' 
-        transcription = transcribe_audio(f'{MP3_FOLDER_PATH}/{file}')
-        all_transcriptions.append(transcription)
+    # for file in mp3_files:
+    #     timestamp = f'{date}_{time}' 
+    #     transcription = transcribe_audio(f'{MP3_FOLDER_PATH}/{file}')
+    #     all_transcriptions.append(transcription)
 
-    pdf_transcription_file = create_pdf(all_transcriptions, f'{user_file_name}-{timestamp}')
+    # pdf_transcription_file = create_pdf(all_transcriptions, f'{user_file_name}-{timestamp}')
     # upload_file_to_s3(pdf_transcription_file, AWS_BUCKET, pdf_transcription_file)
+
+    cursor_sql = connect_to_mysql().cursor
+    query_sql = """INSERT INTO"""
+
     return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restrito, "file_name": user_file_name})
 
 

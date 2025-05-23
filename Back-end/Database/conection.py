@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os 
 import mysql.connector
 from mysql.connector import errorcode
+import mysql.connector.cursor
 
 
 load_dotenv()
@@ -23,3 +24,22 @@ def connect_to_mysql():
         else:
             print(e)
     return cnx
+
+def insert_file_to_mysql(cursor: mysql.connector.cursor,
+                         nome: str,
+                         data_transcricao: str,
+                         employer_id: int,
+                         empresa_id: int
+                         ):
+    query_sql = """USE audioscript"""
+    cursor.execute(query_sql)
+    query_sql = f"""INSERT INTO Arquivo(nome, DataTranscricao, Fk_Employer_id, Fk_Empresa_id) values
+        ({nome}, {data_transcricao}, {employer_id}, {empresa_id})
+    """
+    cursor.execute(query_sql)
+    print(f"File {nome} inserted succesfully into Arquivo")
+
+if __name__=="__main__":
+    cnx = connect_to_mysql()
+    cursor = cnx.cursor()
+

@@ -11,6 +11,9 @@ terraform.tfstate
 #pdf files created as testing output
 *.pdf
 *.mp3
+*.png
 text.txt
 
 __pycache__/
+
+mp3-files/
