@@ -2,10 +2,9 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
-from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from Conversor.main import transform_mp4_to_mp3
-from Database.conection import connect_to_mysql
+from Database.conection import connect_to_mysql, insert_file_into_mysql
 from CreatePdf.main import create_pdf
 from AwsS3Operations.main import upload_file_to_s3, download_file_from_s3, delete_file_from_s3
 from Transcription.main import transcribe_audio
@@ -26,13 +25,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
-
-# @app.route("/api/empresas", methods=["GET"])
-# def get_empresas():
-#     cursor.execute("SELECT * FROM Empresa")
-#     result = cursor.fetchall()
-#     return jsonify(result)
-
 @app.route('/api/uploadfiles', methods=['POST'])
 def upload_files():
     restrito = request.form.get('restrito') 
@@ -49,17 +41,15 @@ def upload_files():
     time = str(today.time())
     mp3_files = os.listdir(MP3_FOLDER_PATH)
     all_transcriptions = []
-    # for file in mp3_files:
-    #     timestamp = f'{date}_{time}' 
-    #     transcription = transcribe_audio(f'{MP3_FOLDER_PATH}/{file}')
-    #     all_transcriptions.append(transcription)
-
-    # pdf_transcription_file = create_pdf(all_transcriptions, f'{user_file_name}-{timestamp}')
-    # upload_file_to_s3(pdf_transcription_file, AWS_BUCKET, pdf_transcription_file)
-
-    cursor_sql = connect_to_mysql().cursor
-    query_sql = """INSERT INTO"""
-
+    for file in mp3_files:
+        timestamp = f'{date}_{time}' 
+        transcription = transcribe_audio(f'{MP3_FOLDER_PATH}/{file}')
+        all_transcriptions.append(transcription)
+    
+    pdf_transcription_file = create_pdf(all_transcriptions, f'{user_file_name}-{timestamp}')
+    upload_file_to_s3(pdf_transcription_file, AWS_BUCKET, pdf_transcription_file)
+    cnx = connect_to_mysql()
+    insert_file_into_mysql(cnx, f'{user_file_name}-{timestamp}', date, 1, 1)
     return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restrito, "file_name": user_file_name})
 
 

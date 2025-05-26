@@ -23,23 +23,28 @@ def connect_to_mysql():
             print("Database does not exist")
         else:
             print(e)
+    if cnx.connection_id != None:
+        print("Succesfully connected into mysql.")
     return cnx
 
-def insert_file_to_mysql(cursor: mysql.connector.cursor,
+def insert_file_into_mysql(cnx: mysql.connector.connection,
                          nome: str,
                          data_transcricao: str,
                          employer_id: int,
                          empresa_id: int
                          ):
+    cursor = cnx.cursor()
     query_sql = """USE audioscript"""
     cursor.execute(query_sql)
-    query_sql = f"""INSERT INTO Arquivo(nome, DataTranscricao, Fk_Employer_id, Fk_Empresa_id) values
-        ({nome}, {data_transcricao}, {employer_id}, {empresa_id})
+    query_sql = """
+    INSERT INTO Arquivo (nome, DataTranscricao, Fk_Employer_id, Fk_Empresa_id)
+    VALUES (%s, %s, %s, %s)
     """
-    cursor.execute(query_sql)
-    print(f"File {nome} inserted succesfully into Arquivo")
+    cursor.execute(query_sql, (nome, data_transcricao, employer_id, empresa_id))
+    cnx.commit()
+    print(f"File '{nome}' succesfully inserted into table Arquivo")
 
 if __name__=="__main__":
     cnx = connect_to_mysql()
     cursor = cnx.cursor()
-
+    insert_file_into_mysql(cnx, "laksdj", "2025-05-14 09:45:20.324", 1,1)
