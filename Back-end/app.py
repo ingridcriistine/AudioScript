@@ -27,7 +27,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/api/uploadfiles', methods=['POST'])
 def upload_files():
-    restrito = request.form.get('restrito') 
+    restricted = request.form.get('restrito') 
     user_file_name = request.form.get('user-file-name')
     files = request.files.getlist('files')  
     for f in files:
@@ -49,7 +49,10 @@ def upload_files():
     pdf_transcription_file = create_pdf(all_transcriptions, f'{user_file_name}-{timestamp}')
     upload_file_to_s3(pdf_transcription_file, AWS_BUCKET, pdf_transcription_file)
     cnx = connect_to_mysql()
-    insert_file_into_mysql(cnx, f'{user_file_name}-{timestamp}', date, 1, 1)
+    if restricted == "sim":
+        insert_restricted_file_into_mysql()
+    else:
+        insert_file_into_mysql(cnx, f'{user_file_name}-{timestamp}', date, 1, 1)
 
     for filename in os.listdir(MP3_FOLDER_PATH):
         file_path = os.path.join(MP3_FOLDER_PATH, filename)
@@ -57,7 +60,7 @@ def upload_files():
         if os.path.isfile(file_path):
             os.remove(file_path) 
             print(f"Deleted file: {filename}")
-    return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restrito, "file_name": user_file_name})
+    return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restricted, "file_name": user_file_name})
 
 
 

@@ -44,6 +44,16 @@ def insert_file_into_mysql(cnx: mysql.connector.connection,
     cnx.commit()
     print(f"File '{nome}' succesfully inserted into table Arquivo")
 
+def attach_file_on_folder_mysql(cnx: mysql.connector.connection,
+                                      nome: str, 
+                                      data_transcricao: str,
+                                      employer_id: int,
+                                      empresa_id: int
+                                      ):
+    query_sql = """INSERT INTO Pasta (Nome, Arquivo, Privado, Senha)
+    VALUES (%s, %s, %s, %s)"""
+
+    cursor.execute(query_sql, nome, )
 if __name__=="__main__":
     cnx = connect_to_mysql()
     cursor = cnx.cursor()
