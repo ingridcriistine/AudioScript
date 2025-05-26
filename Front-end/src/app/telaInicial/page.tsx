@@ -48,12 +48,8 @@ export default function TelaInicial() {
 
   const handleUpload = async () => {
     const formData = new FormData();
-    console.log(arquivos.length)
-    console.log("abunamalasdjpoci")
-
     for (let i = 0; i < arquivos.length; i++){
       formData.append('files', arquivos[i].file)
-      console.log(arquivos[i].name)
     }
 
     const customFileName = document.getElementById('customFileName') as HTMLInputElement
