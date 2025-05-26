@@ -50,6 +50,13 @@ def upload_files():
     upload_file_to_s3(pdf_transcription_file, AWS_BUCKET, pdf_transcription_file)
     cnx = connect_to_mysql()
     insert_file_into_mysql(cnx, f'{user_file_name}-{timestamp}', date, 1, 1)
+
+    for filename in os.listdir(MP3_FOLDER_PATH):
+        file_path = os.path.join(MP3_FOLDER_PATH, filename)
+    
+        if os.path.isfile(file_path):
+            os.remove(file_path) 
+            print(f"Deleted file: {filename}")
     return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restrito, "file_name": user_file_name})
 
 
