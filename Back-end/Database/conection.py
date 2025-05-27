@@ -12,10 +12,10 @@ PASSWORD = os.getenv("PWDAWSRDS")
 
 def connect_to_mysql():
     try:
-        cnx = mysql.connector.connect(user='matias',
+        cnx = mysql.connector.connect(user='root',
                                         password='root',
                                         host='127.0.0.1',
-                                        database='audioscript')
+                                        database='AudioScript')
     except mysql.connector.Error as e:
         if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Something is wrong with your user name or password")

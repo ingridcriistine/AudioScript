@@ -1,30 +1,53 @@
 from reportlab.lib.pagesizes import letter
-from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.pdfgen import canvas
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from dotenv import load_dotenv
-import assemblyai as aai
-
+import assemblyai as aai  
 
 file = "/home/matiaszuniga/Downloads/audiotest.mp3"
+
+styles = getSampleStyleSheet()
+title_style = ParagraphStyle(
+    name='TitleStyle',
+    parent=styles['Title'],
+    fontSize=26,
+    alignment=TA_CENTER,
+    spaceAfter=20
+)
+
+speaker_style = ParagraphStyle(
+    name='SpeakerStyle',
+    parent=styles['Normal'],
+    fontSize=12,
+    spaceAfter=6,
+    spaceBefore=6,
+    leftIndent=12
+)
+
+utterance_style = ParagraphStyle(
+    name='UtteranceStyle',
+    parent=styles['Normal'],
+    fontSize=12,
+    leftIndent=24,
+    spaceAfter=10
+)
 
 
 def add_title(doc):
     doc.append(Spacer(1, 20))
-    doc.append(Paragraph('Transcription', ParagraphStyle(name='Name',
-                                                          fontFamily='Helvetica',
-                                                          fontSize=26,
-                                                          alignment=TA_CENTER)))
-    doc.append(Spacer(1, 50))
+    doc.append(Paragraph('Transcription', title_style))
+    doc.append(Spacer(1, 30))
     return doc
 
 
 def add_paragraphs(doc, transcriptions: list[aai.Transcript]):
     for transcription in transcriptions:
         for utterance in transcription.utterances:
-            doc.append(Paragraph(f"-{utterance.speaker}: "))
-            doc.append(Paragraph(utterance.text))
+            speaker_paragraph = Paragraph(f"<b>{utterance.speaker}:</b>", speaker_style)
+            text_paragraph = Paragraph(utterance.text, utterance_style)
+            doc.extend([speaker_paragraph, text_paragraph])
     # with open('Files-creation/Pdf/text.txt') as txt:
     #     for line in txt.read().split('\n'):
     #         print(line)
@@ -32,12 +55,22 @@ def add_paragraphs(doc, transcriptions: list[aai.Transcript]):
     #         doc.append(Spacer(1, 20))
     return doc
 
-def create_pdf(transcriptions,file_name: str):
+
+def create_pdf(transcriptions, file_name: str):
     document = []
     document = add_title(document)
-    SimpleDocTemplate(f'{file_name}.pdf', pagesize=letter,
-                    rightMargin=12, leftMargin=12,
-                    topMargin=12, bottomMargin=6).build(add_paragraphs(document, transcriptions))
+    document = add_paragraphs(document, transcriptions)
+
+    pdf = SimpleDocTemplate(
+        f'{file_name}.pdf',
+        pagesize=letter,
+        rightMargin=40,
+        leftMargin=40,
+        topMargin=40,
+        bottomMargin=20
+    )
     
-    print(f'Pdf file {file_name} created')
+    pdf.build(document)
+    
+    print(f'PDF file {file_name}.pdf created')
     return f'{file_name}.pdf'
