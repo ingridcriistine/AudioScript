@@ -20,8 +20,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # CORS(app)
 
-
-
 # @app.route("/api/empresas", methods=["GET"])
 # def get_empresas():
 #     cursor.execute("SELECT * FROM Empresa")
