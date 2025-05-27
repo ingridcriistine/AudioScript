@@ -1,6 +1,6 @@
 variable "aws_region" {
     type = string
-    description = "the actual region of the account"
+    description = "the region of the account"
     default = "sa-east-1"
 }
 

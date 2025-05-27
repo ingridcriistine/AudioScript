@@ -1,4 +1,5 @@
-
+.venv 
+.env
 
 *.pyc
 .env
@@ -8,9 +9,11 @@
 terraform.tfstate
 
 #pdf files created as testing output
-output*.pdf
-testing.pdf
-
+*.pdf
+*.mp3
+*.png
 text.txt
 
 __pycache__/
+
+mp3-files/
