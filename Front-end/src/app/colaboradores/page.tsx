@@ -10,11 +10,11 @@ import { useState } from "react";
 export default function Colaboradores(){
 
     const [selectFormat, setSelectFormat] = useState(null);
-    const [date, setDate] = useState<Date | null>(null);
     const [modal, setModal] = useState(false);
     const [nomeColaborador, setNomeColaborador] = useState("");
     const [codColaborador, setCodColaborador] = useState("");
     const [emailColaborador, setEmailColaborador] = useState("");
+    const [error,setError] = useState<boolean>(false)
 
     const closeModal = () => {
         setModal(false);
@@ -22,6 +22,41 @@ export default function Colaboradores(){
 
     const openModal = () => {
         setModal(true);
+    }
+
+    const Cadastrar = async () => {
+        try{
+            const response =  await fetch('http://localhost:8080/cadastrarFunc',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nomeColaborador: nomeColaborador,
+                    codColaborador: codColaborador,
+                    emailColaborador: emailColaborador
+                }),
+            });
+
+            const result = await response.json();
+
+            if (response.status > 400 && response.status < 500) {
+                setError(true)
+                setCodColaborador("")
+                setNomeColaborador("")
+                setEmailColaborador("")
+                alert(result.message);
+            } else {
+                // sessionStorage.setItem("Token", "Bearer " + result.token)
+                setError(false);
+                setCodColaborador("")
+                setNomeColaborador("")
+                setEmailColaborador("")
+            }
+            console.log(result)
+        }catch{
+
+        }
     }
     return(
         <>
@@ -78,21 +113,21 @@ export default function Colaboradores(){
                                 placeholder="Código"
                                 className="border-1 rounded-[5px] p-2 mt-2 text-[13px]"
                                 value={codColaborador}
-                                onChange={(e) => setCodColaborador(e.target.value)}
+                                onChange={(e) => setCodColaborador(e?.target.value)}
                             />
                             <input
                                 type="text"
                                 placeholder="Nome"
                                 className="border-1 rounded-[5px] p-2 mt-2 text-[13px]"
                                 value={nomeColaborador}
-                                onChange={(e) => setNomeColaborador(e.target.value)}
+                                onChange={(e) => setNomeColaborador(e?.target.value)}
                             />
                             <input
                                 type="email"
                                 placeholder="Email"
                                 className="border-1 rounded-[5px] p-2 mt-2 text-[13px]"
                                 value={emailColaborador}
-                                onChange={(e) => setEmailColaborador(e.target.value)}
+                                onChange={(e) => setEmailColaborador(e?.target.value)}
                             />
                         </form>
                         <div className="flex justify-between mt-10">
@@ -103,7 +138,7 @@ export default function Colaboradores(){
                             Cancelar
                         </button>
                         <button
-                            onClick={closeModal}
+                            onClick={Cadastrar}
                             className="flex justify-center items-center h-8 text-[15px] bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 cursor-pointer"
                         >
                             Confirmar
