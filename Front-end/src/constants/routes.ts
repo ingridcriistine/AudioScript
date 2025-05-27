@@ -4,6 +4,6 @@ export enum ROUTES{
     hist = "/historico",
     arqvScrt =  "/arquivoSecreto",
     cola = "/colaboradores",
-    uploads =  "http://localhost:3000/api/uploads",
+    upload_files =  "http://localhost:5000/api/uploadfiles",
     teste = "/teste"
 }

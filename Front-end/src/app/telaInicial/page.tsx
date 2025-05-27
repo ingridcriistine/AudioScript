@@ -8,6 +8,7 @@ import { ArquivoItem } from "@/components/upaloadArquivo";
 import { ROUTES } from "@/constants/routes";
 
 type Arquivo = {
+  file: File
   name: string;
   id: string;
 };
@@ -16,6 +17,7 @@ export default function TelaInicial() {
 
   const [arquivos, setArquivos] = useState<Arquivo[]>([]);
   const [restrito, setRestrito] = useState<"sim" | "nao" | "">("");
+  const [filename, setFilename] = useState<string>("");
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -27,10 +29,10 @@ export default function TelaInicial() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      // Converte FileList para um array e atualiza o estado, gerando um ID único para cada arquivo
-      const novosArquivos = Array.from(e.target.files).map((file) => ({
+      const novosArquivos: Arquivo[] = Array.from(e.target.files).map((file) => ({
+        file,
         name: file.name,
-        id: `${file.name}-${Date.now()}`, // Criando um ID único com base no nome e timestamp
+        id: `${file.name}-${Date.now()}`
       }));
       setArquivos((prevArquivos) => [...prevArquivos, ...novosArquivos]);
     }
@@ -45,20 +47,17 @@ export default function TelaInicial() {
   };
 
   const handleUpload = async () => {
-    console.log("Funçao");
     const formData = new FormData();
-
-    if (fileInputRef.current?.files) {
-      const files = fileInputRef.current.files;
-      for (let i = 0; i < files.length; i++) {
-        formData.append('files', files[i]); // nome "files" deve bater com o backend
-      }
+    for (let i = 0; i < arquivos.length; i++){
+      formData.append('files', arquivos[i].file)
     }
 
+    const customFileName = document.getElementById('customFileName') as HTMLInputElement
+    formData.append('user-file-name', customFileName.value)
     formData.append('restrito', restrito);
 
     try {
-      const response = await fetch('http://localhost:5000/api/uploads', {
+      const response = await fetch(ROUTES.upload_files, {
         method: 'POST',
         body: formData
       })
@@ -90,7 +89,6 @@ export default function TelaInicial() {
                   Escolher arquivos
                 </button>
 
-                {/* Input de arquivo oculto */}
                 <input
                   type="file"
                   multiple
@@ -112,12 +110,12 @@ export default function TelaInicial() {
 
               </div>
 
-              {/* Nome do arquivo transcrito */}
               <div className="flex flex-col gap-2 w-full">
                 <label htmlFor="">Nome do arquivo transcrito</label>
                 <input
                   type="text"
                   className="flex text-white border rounded-sm p-1 border-amber-50 w-[50%]"
+                  id="customFileName"
                 />
               </div>
 
