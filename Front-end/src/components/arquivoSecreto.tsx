@@ -14,11 +14,10 @@ export default function ArquivoSecreto({ title }: any) {
 
   const openMenu = () => {
     if (dotsRef.current) {
-      const rect = dotsRef.current.getBoundingClientRect();
-      setMenuPosition({
-        top: rect.bottom,
-        left: rect.left,
-      });
+      const offsetTop = dotsRef.current.offsetTop + dotsRef.current.offsetHeight + 12;
+      const offsetLeft = dotsRef.current.offsetLeft;
+
+      setMenuPosition({ top: offsetTop, left: offsetLeft });
       setModal(true);
     }
   };
@@ -31,30 +30,44 @@ export default function ArquivoSecreto({ title }: any) {
       document.body.classList.remove("overflow-hidden");
     }
 
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dotsRef.current && !dotsRef.current.contains(event.target as Node)) {
+        setModal(false);
+      }
+    };
+    
+    if (modal) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    
     return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
       document.body.classList.remove("overflow-hidden");
     };
+
   }, [modal]);
   return (
     <>
-      <div className="bg-[#3D3D3D] flex flex-col w-[220px] rounded p-3 pb-5 gap-4 text-[14px] items-center">
-        <div className="flex justify-between w-[190px]">
-          <p className="cursor-pointer">{title}</p>
-          <button ref={dotsRef} onClick={openMenu} className="p-1">
-            <Image
-              className="w-[20px] cursor-pointer"
-              src={Points}
-              alt="Ícone de opções"
-            />
-          </button>
+      <div className="relative">
+        <div className="bg-[#3D3D3D] flex flex-col w-[220px] rounded p-3 pb-5 gap-4 text-[14px] items-center">
+          <div className="flex justify-between w-[190px]">
+            <p className="cursor-pointer">{title}</p>
+            <button ref={dotsRef} onClick={openMenu} className="p-1">
+              <Image
+                className="w-[20px] cursor-pointer"
+                src={Points}
+                alt="Ícone de opções"
+              />
+            </button>
+          </div>
+          <Image className="w-[28px] cursor-pointer" src={Locker} alt={"Ícone de cadeado"} />
         </div>
-        <Image className="w-[28px] cursor-pointer" src={Locker} alt={"Ícone de cadeado"} />
-      </div>
 
-      {modal && (
-        <div className="fixed inset-0 z-50" onClick={closeMenu}>
+        {modal && (
           <div
-            className="fixed bg-zinc-800 text-white rounded-md shadow-md flex flex-col w-40"
+            className="absolute bg-zinc-800 text-white rounded-md shadow-md flex flex-col w-40 z-50"
             style={{
               top: `${menuPosition.top}px`,
               left: `${menuPosition.left}px`,
@@ -67,8 +80,9 @@ export default function ArquivoSecreto({ title }: any) {
             <button className="px-4 py-2 text-left hover:bg-zinc-700">Baixar como .doc</button>
             <button className="px-4 py-2 text-left hover:bg-zinc-700 text-red-400">Excluir</button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+
     </>
 
   );
