@@ -176,7 +176,7 @@ export default function TelaInicial() {
         {/* Modal */}
         {modal && (
         <div className="fixed inset-0 z-50 flex items-end justify-end pr-5 pb-5">
-            <div className="bg-gray-100 border-t border-b border-black text-white px-4 py-3 rounded-2xl" role="alert">
+            <div className="bg-gray-600 border-t border-b border-black text-white px-4 py-3 rounded-[10px]" role="alert">
               <p className="text-sm">Carregando arquivos...</p>
             </div>
         </div>
