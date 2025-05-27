@@ -20,6 +20,8 @@ export default function Historico() {
     const [date, setDate] = useState<Date | null>(null);
     const [modal, setModal] = useState(false);
     const [nomePasta, setNomePasta] = useState("");
+    const [error,setError] = useState<boolean>(false)
+
 
     const closeModal = () => {
         setModal(false);
@@ -34,6 +36,34 @@ export default function Historico() {
         { name: 'mp4' },
     ];
 
+    const CriarPasta = async () => {
+        try{
+            const response =  await fetch('http://localhost:8080/cadastrarFunc',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                   nomePasta : nomePasta
+                }),
+            });
+
+            const result = await response.json();
+
+            if (response.status > 400 && response.status < 500) {
+                setError(true)
+                setNomePasta("")
+                alert(result.message);
+            } else {
+                // sessionStorage.setItem("Token", "Bearer " + result.token)
+                setError(false);
+               setNomePasta("")
+            }
+            console.log(result)
+        }catch{
+
+        }
+    }
     return (
         <div className="z-0">
             <Menu />
@@ -81,7 +111,7 @@ export default function Historico() {
                             placeholder="Nome da pasta"
                             className="border-2 rounded-[5px] p-2 mt-2 text-[13px]"
                             value={nomePasta}
-                            onChange={(e) => setNomePasta(e.target.value)}
+                            onChange={(e) => setNomePasta(e?.target.value)}
                         />
                         </form>
                         <div className="flex justify-between mt-10">
@@ -92,7 +122,7 @@ export default function Historico() {
                             Cancelar
                         </button>
                         <button
-                            onClick={closeModal}
+                            onClick={CriarPasta}
                             className="flex justify-center items-center h-8 text-[15px] bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 cursor-pointer"
                         >
                             Confirmar
