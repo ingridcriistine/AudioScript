@@ -3,7 +3,6 @@ from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
 from reportlab.pdfgen import canvas
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-from dotenv import load_dotenv
 import assemblyai as aai
 
 

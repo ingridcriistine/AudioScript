@@ -51,6 +51,7 @@ def upload_files():
     upload_file_to_s3(pdf_transcription_file, AWS_BUCKET, pdf_transcription_file)
     cnx = connect_to_mysql()
     if restricted == "sim":
+        insert_file_into_mysql(cnx, filename_on_db_and_aws, date, 1, 1)
         attach_file_on_folder_mysql(cnx, filename_on_db_and_aws)
     else:
         insert_file_into_mysql(cnx, filename_on_db_and_aws, date, 1, 1)
@@ -60,7 +61,9 @@ def upload_files():
     
         if os.path.isfile(file_path):
             os.remove(file_path) 
-            print(f"Deleted file: {filename}")
+            print(f"File deleted: {filename}")
+    os.remove(f"{filename_on_db_and_aws}.pdf")
+    print(f"File deleted: {filename_on_db_and_aws}.pdf")
     return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restricted, "file_name": user_file_name})
 
 

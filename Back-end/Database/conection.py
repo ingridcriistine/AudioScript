@@ -57,20 +57,18 @@ def attach_file_on_folder_mysql(cnx: mysql.connector.connection, filename: str):
         query_sql = "SELECT id FROM Pasta WHERE Nome = 'pasta_privada'"
         cursor.execute(query_sql)
         pasta_id = cursor.fetchone()[0]
-    pasta_id = result[0]
+    else:
+        pasta_id = result[0]
 
-    query_sql = f"SELECT id FROM Arquivo WHERE Nome = '{filename}'"
-    cursor.execute(query_sql)
+    query_sql = """SELECT id FROM Arquivo WHERE Nome = %s"""
+    cursor.execute(query_sql, (filename,))
     file_id = cursor.fetchone()[0]
 
-    query_sql = f"""UPDATE Arquivo SET Fk_Pasta_Id = %s WHERE id = %s"""
-    cursor.execute(query_sql, pasta_id, file_id)
+    query_sql = """UPDATE Arquivo SET Fk_Pasta_Id = %s WHERE id = %s"""
+    cursor.execute(query_sql, (pasta_id, file_id))
     cnx.commit()
-
-    # cursor.execute(query_sql, nome, )
-
 
 if __name__=="__main__":
     cnx = connect_to_mysql()
     cursor = cnx.cursor()
-    attach_file_on_folder_mysql(cnx)
+    # attach_file_on_folder_mysql(cnx)
