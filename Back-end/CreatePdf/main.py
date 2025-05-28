@@ -12,13 +12,14 @@ file = "/home/matiaszuniga/Downloads/audiotest.mp3"
 
 def add_title(doc):
     doc.append(Spacer(1, 20))
-    doc.append(Paragraph('Transcription', ParagraphStyle(name='Name',
-                                                          fontFamily='Helvetica',
-                                                          fontSize=26,
-                                                          alignment=TA_CENTER)))
+    doc.append(Paragraph('Transcription', ParagraphStyle(
+        name='Name',
+        fontFamily='Helvetica',
+        fontSize=26,
+        alignment=TA_CENTER))
+    )
     doc.append(Spacer(1, 50))
     return doc
-
 
 def add_paragraphs(doc, transcriptions: list[aai.Transcript]):
     for transcription in transcriptions:
@@ -33,6 +34,5 @@ def create_pdf(transcriptions,file_name: str):
     SimpleDocTemplate(f'{file_name}.pdf', pagesize=letter,
                     rightMargin=12, leftMargin=12,
                     topMargin=12, bottomMargin=6).build(add_paragraphs(document, transcriptions))
-    
     logging.info(f'Pdf file {file_name} created')
     return f'{file_name}.pdf'

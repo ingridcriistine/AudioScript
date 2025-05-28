@@ -33,12 +33,13 @@ def connect_to_mysql():
         logging.info("Succesfully connected into mysql.")
     return cnx
 
-def insert_file_into_mysql(cnx: mysql.connector.connection,
-                         nome: str,
-                         data_transcricao: str,
-                         employer_id: int,
-                         empresa_id: int
-                         ):
+def insert_file_into_mysql(
+        cnx: mysql.connector.connection,
+        nome: str,
+        data_transcricao: str,
+        employer_id: int,
+        empresa_id: int
+    ):
     cursor = cnx.cursor()
     query_sql = """USE audioscript"""
     cursor.execute(query_sql)
@@ -52,7 +53,6 @@ def insert_file_into_mysql(cnx: mysql.connector.connection,
 
 def attach_file_on_folder_mysql(cnx: mysql.connector.connection, filename: str):
     cursor = cnx.cursor()
-
     query_sql = "SELECT id FROM Pasta WHERE Nome = 'pasta_privada'"
     cursor.execute(query_sql)
     result = cursor.fetchone()
@@ -69,7 +69,6 @@ def attach_file_on_folder_mysql(cnx: mysql.connector.connection, filename: str):
     query_sql = """SELECT id FROM Arquivo WHERE Nome = %s"""
     cursor.execute(query_sql, (filename,))
     file_id = cursor.fetchone()[0]
-
     query_sql = """UPDATE Arquivo SET Fk_Pasta_Id = %s WHERE id = %s"""
     cursor.execute(query_sql, (pasta_id, file_id))
     cnx.commit()

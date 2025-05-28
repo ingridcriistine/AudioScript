@@ -14,10 +14,8 @@ logging.basicConfig(
 )
 
 def upload_file_to_s3(file_path, bucket, object_name=None):
-
     if object_name==None:
         object_name = os.path.basename(file_path)
-
     try:
         response = s3_client.upload_file(file_path, bucket, f'{BUCKET_FOLDER}/{object_name}')
     except ClientError as e:
@@ -27,10 +25,8 @@ def upload_file_to_s3(file_path, bucket, object_name=None):
     return True
 
 def download_file_from_s3(bucket, object_name, file_name=None):
-
     if file_name == None:
         file_name = os.path.basename(object_name)
-
     try:
         response = s3_client.download_file(bucket, f'{BUCKET_FOLDER}/{object_name}', file_name)
     except ClientError as e:
@@ -40,8 +36,10 @@ def download_file_from_s3(bucket, object_name, file_name=None):
 
 def delete_file_from_s3(bucket, object_name):
     try:
-        response = s3_client.delete_object(Bucket=bucket, 
-                                           Key=f'{BUCKET_FOLDER}/{object_name}')
+        response = s3_client.delete_object(
+            Bucket=bucket, 
+            Key=f'{BUCKET_FOLDER}/{object_name}'
+            )
     except ClientError as e:
         logging.error(e)
         return False

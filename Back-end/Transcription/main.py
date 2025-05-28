@@ -16,4 +16,3 @@ def transcribe_audio(audio_path: str) -> aai.Transcript:
 
 # for utterance in transcript.utterances:
 #   print(f"Speaker {utterance.speaker}: {utterance.text}")
-
