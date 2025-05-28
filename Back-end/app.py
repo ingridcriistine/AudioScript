@@ -57,7 +57,10 @@ def upload_files():
     # pdf_transcription_file = create_pdf(all_transcriptions, f'{user_file_name}-{timestamp}')
     # upload_file_to_s3(pdf_transcription_file, AWS_BUCKET, pdf_transcription_file)
 
-    cursor_sql = connect_to_mysql().cursor
+    cnx = connect_to_mysql()
+    if cnx is None:
+        return jsonify({"error": "Database connection failed"}), 500
+    cursor_sql = cnx.cursor()
     query_sql = """INSERT INTO"""
 
     return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restrito, "file_name": user_file_name})
