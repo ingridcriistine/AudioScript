@@ -7,6 +7,12 @@ import logging
 BUCKET_FOLDER = 'pdf-files'
 s3_client = boto3.client('s3')
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S' 
+)
+
 def upload_file_to_s3(file_path, bucket, object_name=None):
 
     if object_name==None:
@@ -17,7 +23,7 @@ def upload_file_to_s3(file_path, bucket, object_name=None):
     except ClientError as e:
         logging.error(e)
         return False
-    print(f'Object {object_name} uploaded to s3')
+    logging.info(f'Object {object_name} uploaded to s3')
     return True
 
 def download_file_from_s3(bucket, object_name, file_name=None):
@@ -57,4 +63,4 @@ if __name__=="__main__":
 
     if download == True:
         logging.info(f'file {file_path} uploaded with success')
-        print('Arquivo baixado!')
+        logging.info('Arquivo baixado!')

@@ -9,6 +9,7 @@ from CreatePdf.main import create_pdf
 from AwsS3Operations.main import upload_file_to_s3, download_file_from_s3, delete_file_from_s3
 from Transcription.main import transcribe_audio
 from datetime import datetime
+import logging
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
@@ -18,10 +19,15 @@ UPLOAD_FOLDER = 'mp3-files'
 MP3_FOLDER_PATH = f'{UPLOAD_FOLDER}/'
 AWS_BUCKET = 'audioscript-s3-bucket'
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S' 
+)
+
 app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
@@ -34,7 +40,7 @@ def upload_files():
         filename = secure_filename(f.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         f.save(filepath)
-        print(f'file saved on /{UPLOAD_FOLDER}/{f.filename}')
+        logging.info(f'file saved on /{UPLOAD_FOLDER}/{f.filename}')
 
     today = datetime.now()
     date = str(today.date())
@@ -61,9 +67,9 @@ def upload_files():
     
         if os.path.isfile(file_path):
             os.remove(file_path) 
-            print(f"File deleted: {filename}")
+            logging.info(f"File deleted: {filename}")
     os.remove(f"{filename_on_db_and_aws}.pdf")
-    print(f"File deleted: {filename_on_db_and_aws}.pdf")
+    logging.info(f"File deleted: {filename_on_db_and_aws}.pdf")
     return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restricted, "file_name": user_file_name})
 
 

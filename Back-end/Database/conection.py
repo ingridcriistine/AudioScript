@@ -3,12 +3,18 @@ import os
 import mysql.connector
 from mysql.connector import errorcode
 import mysql.connector.cursor
-
+import logging
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
 USER = os.getenv("USERAWSRDS")
 PASSWORD = os.getenv("PWDAWSRDS")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S' 
+)
 
 def connect_to_mysql():
     try:
@@ -18,13 +24,13 @@ def connect_to_mysql():
                                         database='audioscript')
     except mysql.connector.Error as e:
         if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Something is wrong with your user name or password")
+            logging.error("Something is wrong with your user name or password")
         elif e.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Database does not exist")
+            logging.error("Database does not exist")
         else:
-            print(e)
+            logging.error(e)
     if cnx.connection_id != None:
-        print("Succesfully connected into mysql.")
+        logging.info("Succesfully connected into mysql.")
     return cnx
 
 def insert_file_into_mysql(cnx: mysql.connector.connection,
@@ -42,7 +48,7 @@ def insert_file_into_mysql(cnx: mysql.connector.connection,
     """
     cursor.execute(query_sql, (nome, data_transcricao, employer_id, empresa_id))
     cnx.commit()
-    print(f"File '{nome}' succesfully inserted into table Arquivo")
+    logging.info(f"File '{nome}' succesfully inserted into table Arquivo")
 
 def attach_file_on_folder_mysql(cnx: mysql.connector.connection, filename: str):
     cursor = cnx.cursor()

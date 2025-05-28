@@ -4,6 +4,7 @@ from reportlab.pdfgen import canvas
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 import assemblyai as aai
+import logging
 
 
 file = "/home/matiaszuniga/Downloads/audiotest.mp3"
@@ -24,11 +25,6 @@ def add_paragraphs(doc, transcriptions: list[aai.Transcript]):
         for utterance in transcription.utterances:
             doc.append(Paragraph(f"-{utterance.speaker}: "))
             doc.append(Paragraph(utterance.text))
-    # with open('Files-creation/Pdf/text.txt') as txt:
-    #     for line in txt.read().split('\n'):
-    #         print(line)
-    #         doc.append(Paragraph(line))
-    #         doc.append(Spacer(1, 20))
     return doc
 
 def create_pdf(transcriptions,file_name: str):
@@ -38,5 +34,5 @@ def create_pdf(transcriptions,file_name: str):
                     rightMargin=12, leftMargin=12,
                     topMargin=12, bottomMargin=6).build(add_paragraphs(document, transcriptions))
     
-    print(f'Pdf file {file_name} created')
+    logging.info(f'Pdf file {file_name} created')
     return f'{file_name}.pdf'
