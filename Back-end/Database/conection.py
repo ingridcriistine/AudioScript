@@ -2,8 +2,7 @@ from dotenv import load_dotenv
 import os 
 import mysql.connector
 from mysql.connector import errorcode
-import mysql.connector.cursor
-
+# import mysql.connector.cursor
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
@@ -12,10 +11,14 @@ PASSWORD = os.getenv("PWDAWSRDS")
 
 def connect_to_mysql():
     try:
-        cnx = mysql.connector.connect(user='matias',
-                                        password='root',
-                                        host='127.0.0.1',
-                                        database='audioscript')
+        cnx = mysql.connector.connect(
+            user='root',
+            password='root',
+            host="localhost",
+            port=3307,
+            database='audioscript'
+        )
+        
     except mysql.connector.Error as e:
         if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Something is wrong with your user name or password")
@@ -23,6 +26,7 @@ def connect_to_mysql():
             print("Database does not exist")
         else:
             print(e)
+            
     if cnx.connection_id != None:
         print("Succesfully connected into mysql.")
     return cnx
@@ -73,4 +77,4 @@ def attach_file_on_folder_mysql(cnx: mysql.connector.connection, filename: str):
 if __name__=="__main__":
     cnx = connect_to_mysql()
     cursor = cnx.cursor()
-    attach_file_on_folder_mysql(cnx)
+    print(cnx.connection_id)

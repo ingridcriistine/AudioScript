@@ -9,6 +9,7 @@ from CreatePdf.main import create_pdf
 from AwsS3Operations.main import upload_file_to_s3, download_file_from_s3, delete_file_from_s3
 from Transcription.main import transcribe_audio
 from datetime import datetime
+from routes.login import login_bp
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
@@ -21,6 +22,9 @@ AWS_BUCKET = 'audioscript-s3-bucket'
 app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+app.register_blueprint(login_bp) 
+# chamando login
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
