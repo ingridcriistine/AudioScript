@@ -68,7 +68,6 @@ def create_pdf(transcriptions, file_name: str):
         topMargin=40,
         bottomMargin=20
     )
-    
     pdf.build(document)
     
     print(f'PDF file {file_name}.pdf created')

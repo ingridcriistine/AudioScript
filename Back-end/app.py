@@ -44,7 +44,8 @@ def upload_files():
 
     today = datetime.now()
     date = str(today.date())
-    time = str(today.time())
+    time = today.time()
+    time = time.strftime("%H-%M-%S-%f")
     mp3_files = os.listdir(MP3_FOLDER_PATH)
     all_transcriptions = []
     for file in mp3_files:
@@ -52,7 +53,7 @@ def upload_files():
         transcription = transcribe_audio(f'{MP3_FOLDER_PATH}/{file}')
         all_transcriptions.append(transcription)
 
-    filename_on_db_and_aws = f'{user_file_name}-{timestamp}'
+    filename_on_db_and_aws = f'{user_file_name}_{timestamp}'
     pdf_transcription_file = create_pdf(all_transcriptions, filename_on_db_and_aws)
     upload_file_to_s3(pdf_transcription_file, AWS_BUCKET, pdf_transcription_file)
     cnx = connect_to_mysql()
