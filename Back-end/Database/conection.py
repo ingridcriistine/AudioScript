@@ -1,3 +1,4 @@
+from errno import errorcode
 from dotenv import load_dotenv
 import os 
 import mysql.connector
@@ -13,16 +14,16 @@ def connect_to_mysql():
         cnx = mysql.connector.connect(user='root',
                                         password='root',
                                         host='localhost',
-                                        port=3307,
+                                        port=3306,
                                         database='audioscript')
         return cnx
     except mysql.connector.Error as e:
-        # if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-        #     print("Something is wrong with your user name or password")
-        # elif e.errno == errorcode.ER_BAD_DB_ERROR:
-        #     print("Database does not exist")
-        # else:
-        #     print(e)
+        if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your user name or password")
+        elif e.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist")
+        else:
+            print(e)
         print("AA")
     return cnx
 
