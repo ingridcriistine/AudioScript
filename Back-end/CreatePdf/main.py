@@ -4,7 +4,8 @@ from reportlab.pdfgen import canvas
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from dotenv import load_dotenv
-import assemblyai as aai  
+from assemblyai import Transcript
+
 
 file = "/home/matiaszuniga/Downloads/audiotest.mp3"
 
@@ -41,7 +42,7 @@ def add_title(doc):
     doc.append(Spacer(1, 30))
     return doc
 
-def add_paragraphs(doc, transcriptions: list[aai.Transcript]):
+def add_paragraphs(doc, transcriptions: list[Transcript]):
     for transcription in transcriptions:
         for utterance in transcription.utterances:
             speaker_paragraph = Paragraph(f"<b>{utterance.speaker}:</b>", speaker_style)
