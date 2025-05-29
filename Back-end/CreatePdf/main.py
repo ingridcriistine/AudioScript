@@ -41,7 +41,6 @@ def add_title(doc):
     doc.append(Spacer(1, 30))
     return doc
 
-
 def add_paragraphs(doc, transcriptions: list[aai.Transcript]):
     for transcription in transcriptions:
         for utterance in transcription.utterances:

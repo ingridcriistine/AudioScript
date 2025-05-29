@@ -7,24 +7,26 @@ import logging
 BUCKET_FOLDER = 'pdf-files'
 s3_client = boto3.client('s3')
 
-def upload_file_to_s3(file_path, bucket, object_name=None):
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S' 
+)
 
+def upload_file_to_s3(file_path, bucket, object_name=None):
     if object_name==None:
         object_name = os.path.basename(file_path)
-
     try:
         response = s3_client.upload_file(file_path, bucket, f'{BUCKET_FOLDER}/{object_name}')
     except ClientError as e:
         logging.error(e)
         return False
-    print(f'Object {object_name} uploaded to s3')
+    logging.info(f'Object {object_name} uploaded to s3')
     return True
 
 def download_file_from_s3(bucket, object_name, file_name=None):
-
     if file_name == None:
         file_name = os.path.basename(object_name)
-
     try:
         response = s3_client.download_file(bucket, f'{BUCKET_FOLDER}/{object_name}', file_name)
     except ClientError as e:
@@ -34,8 +36,10 @@ def download_file_from_s3(bucket, object_name, file_name=None):
 
 def delete_file_from_s3(bucket, object_name):
     try:
-        response = s3_client.delete_object(Bucket=bucket, 
-                                           Key=f'{BUCKET_FOLDER}/{object_name}')
+        response = s3_client.delete_object(
+            Bucket=bucket, 
+            Key=f'{BUCKET_FOLDER}/{object_name}'
+            )
     except ClientError as e:
         logging.error(e)
         return False
@@ -57,4 +61,4 @@ if __name__=="__main__":
 
     if download == True:
         logging.info(f'file {file_path} uploaded with success')
-        print('Arquivo baixado!')
+        logging.info('Arquivo baixado!')
