@@ -60,7 +60,7 @@ def attach_file_on_folder_mysql(cnx: mysql.connector.connection, filename: str):
     cursor.execute(query_sql)
     result = cursor.fetchone()
     if result == None:
-        query_sql = "INSERT INTO Pasta (Nome, Is_private) VALUES (pasta_privada, 1)"
+        query_sql = "INSERT INTO Pasta (Nome, Is_private) VALUES ('pasta_privada', 1)"
         cursor.execute(query_sql)
         cnx.commit()
         query_sql = "SELECT id FROM Pasta WHERE Nome = 'pasta_privada'"
