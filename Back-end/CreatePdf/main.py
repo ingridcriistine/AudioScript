@@ -48,11 +48,6 @@ def add_paragraphs(doc, transcriptions: list[Transcript]):
             speaker_paragraph = Paragraph(f"<b>{utterance.speaker}:</b>", speaker_style)
             text_paragraph = Paragraph(utterance.text, utterance_style)
             doc.extend([speaker_paragraph, text_paragraph])
-    # with open('Files-creation/Pdf/text.txt') as txt:
-    #     for line in txt.read().split('\n'):
-    #         print(line)
-    #         doc.append(Paragraph(line))
-    #         doc.append(Spacer(1, 20))
     return doc
 
 
