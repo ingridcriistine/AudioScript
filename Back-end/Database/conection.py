@@ -19,12 +19,14 @@ logging.basicConfig(
 
 def connect_to_mysql():
     try:
-        cnx = mysql.connector.connect(user='root',
-                                        password='root',
-                                        host='localhost',
-                                        port=3306,
-                                        database='audioscript')
-        return cnx
+        cnx = mysql.connector.connect(
+            user='root',
+            password='root',
+            host="localhost",
+            port=3307,
+            database='audioscript'
+        )
+        
     except mysql.connector.Error as e:
         if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             logging.error("Something is wrong with your user name or password")
@@ -79,4 +81,4 @@ def attach_file_on_folder_mysql(cnx: mysql.connector.connection, filename: str):
 if __name__=="__main__":
     cnx = connect_to_mysql()
     cursor = cnx.cursor()
-    # attach_file_on_folder_mysql(cnx)
+    print(cnx.connection_id)
