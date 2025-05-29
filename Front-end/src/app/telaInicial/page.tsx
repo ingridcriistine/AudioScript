@@ -21,6 +21,14 @@ export default function TelaInicial() {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const idUsuario = localStorage.getItem("idUsuario");
+  const idEmpresa = localStorage.getItem("idEmpresa");
+
+  if (!idUsuario || !idEmpresa) {
+    alert("Erro: ID do usuário ou da empresa não encontrado. Faça login novamente.");
+    return;
+  }
+
   const handleButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -51,10 +59,12 @@ export default function TelaInicial() {
     for (let i = 0; i < arquivos.length; i++){
       formData.append('files', arquivos[i].file)
     }
-
+    
     const customFileName = document.getElementById('customFileName') as HTMLInputElement
     formData.append('user-file-name', customFileName.value)
     formData.append('restrito', restrito);
+    formData.append('idUser', idUsuario);
+    formData.append('idEmpresa', idEmpresa);
 
     try {
       const response = await fetch(ROUTES.upload_files, {
@@ -73,7 +83,8 @@ export default function TelaInicial() {
     } catch (error) {
       console.log(error)
     }
-    }
+
+  }
 
     return (
       <>
