@@ -55,6 +55,7 @@ def upload_files():
     else:
         insert_file_into_mysql(cnx, filename_on_db_and_aws, date, 1, 1)
 
+<<<<<<< HEAD
     for filename in os.listdir(MP3_FOLDER_PATH):
         file_path = os.path.join(MP3_FOLDER_PATH, filename)
     
@@ -62,6 +63,15 @@ def upload_files():
             os.remove(file_path) 
             print(f"Deleted file: {filename}")
     return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restricted, "file_name": user_file_name})
+=======
+    cnx = connect_to_mysql()
+    if cnx is None:
+        return jsonify({"error": "Database connection failed"}), 500
+    cursor_sql = cnx.cursor()
+    query_sql = """INSERT INTO"""
+
+    return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restrito, "file_name": user_file_name})
+>>>>>>> pdf-viewer
 
 
 

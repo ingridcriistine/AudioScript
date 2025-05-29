@@ -18,6 +18,19 @@ export default function TelaInicial() {
   const [arquivos, setArquivos] = useState<Arquivo[]>([]);
   const [restrito, setRestrito] = useState<"sim" | "nao" | "">("");
   const [filename, setFilename] = useState<string>("");
+  const [modal, setModal] = useState(false);
+  
+  const closeModal = () => {
+      setModal(false);
+  }
+
+  const openModal = () => {
+      setModal(true);
+
+      setTimeout(() => {
+        closeModal();
+      }, 2000);
+  }
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -47,6 +60,7 @@ export default function TelaInicial() {
   };
 
   const handleUpload = async () => {
+    openModal();
     const formData = new FormData();
     for (let i = 0; i < arquivos.length; i++){
       formData.append('files', arquivos[i].file)
@@ -156,7 +170,17 @@ export default function TelaInicial() {
               <div className=" bg-white w-[80%]"></div>
             </div>
           </div>
+
         </div>
+        
+        {/* Modal */}
+        {modal && (
+        <div className="fixed inset-0 z-50 flex items-end justify-end pr-5 pb-5">
+            <div className="bg-gray-600 border-t border-b border-black text-white px-4 py-3 rounded-[10px]" role="alert">
+              <p className="text-sm">Carregando arquivos...</p>
+            </div>
+        </div>
+        )}
       </>
     );
 }
