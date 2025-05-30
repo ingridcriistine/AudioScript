@@ -20,10 +20,10 @@ logging.basicConfig(
 def connect_to_mysql():
     try:
         cnx = mysql.connector.connect(
-            user='root',
+            user='matias',
             password='root',
-            host="localhost",
-            port=3307,
+            host="127.0.0.1",
+            port=3306,
             database='audioscript'
         )
         
@@ -52,7 +52,7 @@ def insert_file_into_mysql(
     INSERT INTO Arquivo (nome, DataTranscricao, Fk_Employer_id, Fk_Empresa_id)
     VALUES (%s, %s, %s, %s)
     """
-    cursor.execute(query_sql, (nome, data_transcricao, employer_id, empresa_id))
+    cursor.execute(query_sql, (nome, data_transcricao, 1, 1))
     cnx.commit()
     logging.info(f"File '{nome}' succesfully inserted into table Arquivo")
 

@@ -9,6 +9,7 @@ from CreatePdf.main import create_pdf
 from AwsS3Operations.main import upload_file_to_s3, download_file_from_s3, delete_file_from_s3
 from Transcription.main import transcribe_audio
 from datetime import datetime
+import logging
 from routes.login import login_bp
 
 load_dotenv()
@@ -39,6 +40,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def upload_files():
     restricted = request.form.get('restrito') 
     user_file_name = request.form.get('user-file-name')
+    user_id = request.form.get('idUser')
+    empresa_id = request.form.get('idEmpresa')
     files = request.files.getlist('files')  
     for f in files:
         filename = secure_filename(f.filename)
@@ -62,10 +65,10 @@ def upload_files():
     upload_file_to_s3(pdf_transcription_file, AWS_BUCKET, pdf_transcription_file)
     cnx = connect_to_mysql()
     if restricted == "sim":
-        insert_file_into_mysql(cnx, filename_on_db_and_aws, date, 1, 1)
+        insert_file_into_mysql(cnx, filename_on_db_and_aws, date, user_id, empresa_id)
         attach_file_on_folder_mysql(cnx, filename_on_db_and_aws)
     else:
-        insert_file_into_mysql(cnx, filename_on_db_and_aws, date, 1, 1)
+        insert_file_into_mysql(cnx, filename_on_db_and_aws, date, user_id, empresa_id)
 
     for filename in os.listdir(MP3_FOLDER_PATH):
         file_path = os.path.join(MP3_FOLDER_PATH, filename)

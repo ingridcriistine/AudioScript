@@ -54,6 +54,7 @@ export default function ArquivoSecreto() {
                                 onChange={(e) => setDate(e.value as Date)}
                                 placeholder="Data"
                                 showIcon
+                                className='text-white'
                             />
                         </div>
                     </div>

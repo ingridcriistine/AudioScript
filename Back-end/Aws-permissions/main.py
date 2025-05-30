@@ -5,6 +5,13 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from dotenv import load_dotenv
 import assemblyai as aai
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S' 
+)
 
 
 file = "/home/matiaszuniga/Downloads/audiotest.mp3"
@@ -39,5 +46,5 @@ def create_pdf(transcriptions,file_name: str):
                     rightMargin=12, leftMargin=12,
                     topMargin=12, bottomMargin=6).build(add_paragraphs(document, transcriptions))
     
-    print(f'Pdf file {file_name} created')
+    logging.info(f'Pdf file {file_name} created')
     return f'{file_name}.pdf'
