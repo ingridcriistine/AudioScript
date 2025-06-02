@@ -26,7 +26,7 @@ export default function Colaboradores(){
 
     const Cadastrar = async () => {
         try{
-            const response =  await fetch('http://localhost:8080/cadastrarFunc',{
+            const response =  await fetch('http://localhost:8080/cadastraFunc',{
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
