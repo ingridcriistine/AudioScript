@@ -5,7 +5,7 @@ login_bp = Blueprint('login', __name__, url_prefix='/login')
 
 @login_bp.route('/', methods=['GET'])
 def login_form():
-    return 'Página de login (simples)'
+    return 'Página de login (simples)'  
 
 @login_bp.route('/auth', methods=['POST'])
 def autenticar():

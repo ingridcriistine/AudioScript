@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 from Conversor.main import transform_mp4_to_mp3
-from Database.conection import connect_to_mysql, insert_file_into_mysql, create_private_folder, file_folder_attachment
+from Database.conection import connect_to_mysql, insert_file_into_mysql, create_private_folder, attachment_file_folder
 from CreatePdf.main import create_pdf
 from AwsS3Operations.main import upload_file_to_s3, download_file_from_s3, delete_file_from_s3
 from Transcription.main import transcribe_audio
@@ -29,19 +29,18 @@ logging.basicConfig(
 app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
 app.register_blueprint(login_bp) 
-# chamando login
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 @app.route('/api/uploadfiles', methods=['POST'])
 def upload_files():
-    restricted = request.form.get('restrito') 
-    user_file_name = request.form.get('user-file-name')
-    user_id = request.form.get('idUser')
-    empresa_id = request.form.get('idEmpresa')
+    data = request.form
+    restricted = data.get('restrito') 
+    user_file_name = data.get('user-file-name')
+    user_id = data.get('idUser')
+    empresa_id = data.get('idEmpresa')
     files = request.files.getlist('files')  
     for f in files:
         filename = secure_filename(f.filename)
@@ -64,11 +63,14 @@ def upload_files():
     pdf_transcription_file = create_pdf(all_transcriptions, filename_on_db_and_aws)
     upload_file_to_s3(pdf_transcription_file, AWS_BUCKET, pdf_transcription_file)
 
-    cnx = connect_to_mysql()
-    insert_file_into_mysql(cnx, filename_on_db_and_aws, date, user_id, empresa_id)
+    if insert_file_into_mysql(filename_on_db_and_aws, date, user_id, empresa_id):
+        logging.info(f"File '{filename_on_db_and_aws}' succesfully inserted into table Arquivo")
+
     if restricted == "sim":
-        create_private_folder(cnx, filename_on_db_and_aws)
-        file_folder_attachment(cnx, filename_on_db_and_aws, 'pasta_privada')
+        if create_private_folder(filename_on_db_and_aws):
+            logging.info('Private folder sucesfully created on MySQL')
+        if attachment_file_folder(filename_on_db_and_aws, 'pasta_privada'):
+            logging.info(f'File {filename} attached to folder')
 
     for filename in os.listdir(MP3_FOLDER_PATH):
         file_path = os.path.join(MP3_FOLDER_PATH, filename)
@@ -79,7 +81,6 @@ def upload_files():
     os.remove(f"{filename_on_db_and_aws}.pdf")
     logging.info(f"File deleted: {filename_on_db_and_aws}.pdf")
     return jsonify({"message": f"Arquivo recebido e operacoes feitas com sucesso."})
-
 
 
 if __name__ == "__main__":

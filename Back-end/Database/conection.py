@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 import os 
 import mysql.connector
 from mysql.connector import errorcode
-import mysql.connector.cursor
 import logging
 
 load_dotenv()
@@ -39,50 +38,77 @@ def connect_to_mysql():
     return cnx
 
 def insert_file_into_mysql(
-        cnx: mysql.connector.CMySQLConnection,
         nome: str,
         data_transcricao: str,
         employer_id: int,
         empresa_id: int
-    ):
-    cursor = cnx.cursor()
-    query_sql = """USE audioscript"""
-    cursor.execute(query_sql)
-    query_sql = """
-        INSERT INTO Arquivo (nome, DataTranscricao, Fk_Employer_id, Fk_Empresa_id)
-        VALUES (%s, %s, %s, %s)
-    """
-    cursor.execute(query_sql, (nome, data_transcricao, employer_id, empresa_id))
-    cnx.commit()
-    cnx.close()
-    logging.info(f"File '{nome}' succesfully inserted into table Arquivo")
-
-def create_private_folder(cnx: mysql.connector.CMySQLConnection):
-    cursor = cnx.cursor()
-    query_sql = "SELECT id FROM Pasta WHERE Nome = 'pasta_privada'"
-    cursor.execute(query_sql)
-    result = cursor.fetchone()
-    if result == None:
-        query_sql = "INSERT INTO Pasta (Nome, Is_private) VALUES ('pasta_privada', 1)"
-        cursor.execute(query_sql)
-        cnx.commit()
+    ) -> bool:
+    try:
+        cnx = connect_to_mysql()
+        if cnx.connection_id is None:
+            raise ConnectionError('Could not connect to MySQL')
+        
+        with cnx.cursor() as cursor:
+            cursor.execute("USE audioscript")
+            query_sql = """
+                INSERT INTO Arquivo (nome, DataTranscricao, Fk_Employer_id, Fk_Empresa_id)
+                VALUES (%s, %s, %s, %s)
+            """
+            cursor.execute(query_sql, (nome, data_transcricao, employer_id, empresa_id))
+            cnx.commit()
         cnx.close()
+        return True
+    except Exception as e:
+        cnx.close()
+        raise e
 
+def create_private_folder() -> bool:
+    try:
+        cnx = connect_to_mysql()
+        if cnx.connection_id is None:
+            raise ConnectionError('Could not connect to MySQL')
+        with cnx.cursor() as cursor:
+            query_sql = "SELECT id FROM Pasta WHERE Nome = 'pasta_privada'"
+            cursor.execute(query_sql)
+            result = cursor.fetchone()
+            if result is None:
+                query_sql = "INSERT INTO Pasta (Nome, Is_private) VALUES ('pasta_privada', 1)"
+                cursor.execute(query_sql)
+                cnx.commit()
+        cnx.close()
+        return True
+    except Exception as e:
+        cnx.close()
+        raise e
+    
+def attachment_file_folder(filename: str, foldername: str) -> bool:
+    try:
+        cnx = connect_to_mysql()
+        if cnx.connection_id is None:
+            raise ConnectionError('Could not connect to MySQL')
+        
+        with cnx.cursor() as cursor:
+            cursor.execute("SELECT id FROM Pasta WHERE Nome = %s", (foldername,))
+            folder_row = cursor.fetchone()
+            if folder_row is None:
+                raise ValueError(f'Folder {foldername} not found')
+            folder_id = folder_row[0]
 
-def file_folder_attachment(cnx: mysql.connector.CMySQLConnection,filename: str, foldername: str):
-    cursor = cnx.cursor()
-    query_sql = "SELECT id FROM Pasta WHERE Nome = %s"
-    cursor.execute(query_sql, (foldername,))
-    folder_id = cursor.fetchone()[0]
+            cursor.execute("SELECT id FROM Arquivo WHERE Nome = %s", (filename,))
+            file_row = cursor.fetchone()
+            if file_row is None:
+                raise ValueError(f'File {filename} not found')
+            file_id = file_row[0]
 
-    query_sql = """SELECT id FROM Arquivo WHERE Nome = %s"""
-    cursor.execute(query_sql, (filename,))
-    file_id = cursor.fetchone()[0]
-    query_sql = """UPDATE Arquivo SET Fk_Pasta_Id = %s WHERE id = %s"""
-    cursor.execute(query_sql, (folder_id, file_id))
-    cnx.commit()
-    cnx.close()
-    logging.info(f"file {filename} attached to folder {foldername}")
+            query_sql = """UPDATE Arquivo SET Fk_Pasta_Id = %s WHERE id = %s"""
+            cursor.execute(query_sql, (folder_id, file_id))
+            cnx.commit()
+        cnx.close()
+        return True
+    except Exception as e:
+        cnx.close()
+        raise e
+
 
 if __name__=="__main__":
     cnx = connect_to_mysql()
