@@ -10,6 +10,7 @@ from AwsS3Operations.main import upload_file_to_s3, download_file_from_s3, delet
 from Transcription.main import transcribe_audio
 from datetime import datetime
 from routes.login import login_bp
+import logging
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
