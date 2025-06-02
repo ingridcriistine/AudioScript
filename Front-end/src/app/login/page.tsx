@@ -3,6 +3,9 @@
 import Image from "next/image";
 import Capa from "@/assets/bg-login.jpg";
 import { useState } from "react";
+import TelaInicial from "../telaInicial/page";
+import { ROUTES } from "@/constants/routes";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [codEmpresa, setCodEmpresa] = useState<string>("");
@@ -12,6 +15,7 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
+  const router = useRouter();
 
   const Logar = async () => {
     try {
@@ -45,6 +49,7 @@ export default function Home() {
       setError(false);
       setCodEmpresa("");
       setCodFuncionario("")
+      router.push(ROUTES.home)
 
     } catch (erro) {
       console.error("Erro ao logar:", erro);

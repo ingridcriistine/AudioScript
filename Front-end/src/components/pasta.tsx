@@ -23,7 +23,6 @@ export default function Pasta({ title }: { title: string }) {
     }
   };
 
-  // ✅ Trava o scroll ao abrir o menu
   useEffect(() => {
     if (modal) {
       document.body.classList.add("overflow-hidden");

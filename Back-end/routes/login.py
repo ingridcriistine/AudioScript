@@ -3,7 +3,6 @@ from flask import Blueprint, request, jsonify
 from Database.conection import connect_to_mysql
 login_bp = Blueprint('login', __name__, url_prefix='/login')
 
-# Apenas rota de teste simples
 @login_bp.route('/', methods=['GET'])
 def login_form():
     return 'Página de login (simples)'
@@ -22,7 +21,7 @@ def autenticar():
         cursor = conn.cursor(dictionary=True)
 
         cursor.execute(
-            "SELECT Employer.CodigoFunc, Employer.Fk_Empresa_Id FROM Employer  WHERE Employer.CodigoFunc = %s AND Employer.Fk_Empresa_Id = %s",
+            "SELECT Employer.CodigoFunc, Employer.Fk_Empresa_Id FROM Employer WHERE Employer.CodigoFunc = %s AND Employer.Fk_Empresa_Id = %s",
             (codigoFunc, codigoEmpresa)
         )
 

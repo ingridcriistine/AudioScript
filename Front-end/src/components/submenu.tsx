@@ -8,11 +8,13 @@ import iconExit from "@/assets/exit.png";
 import iconSecret from "@/assets/lock.png";
 import iconHistoryc from "@/assets/history.png";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export const Submenu = () => {
 
     const [modal, setModal] = useState(false);
     const [senha, setSenhaArquivo] = useState<string>();
+    const router = useRouter()
 
     const handleConfirm = () => {
         if (senha === "senha") {
@@ -24,6 +26,7 @@ export const Submenu = () => {
     };
     
     const closeModal = () => {
+        handleConfirm();
         setModal(false);
     }
 
