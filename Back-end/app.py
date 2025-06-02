@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 from Conversor.main import transform_mp4_to_mp3
-from Database.conection import connect_to_mysql, insert_file_into_mysql, attach_file_on_folder_mysql
+from Database.conection import connect_to_mysql, insert_file_into_mysql, create_private_folder, file_folder_attachment
 from CreatePdf.main import create_pdf
 from AwsS3Operations.main import upload_file_to_s3, download_file_from_s3, delete_file_from_s3
 from Transcription.main import transcribe_audio
@@ -63,12 +63,12 @@ def upload_files():
     filename_on_db_and_aws = f'{user_file_name}_{timestamp}'
     pdf_transcription_file = create_pdf(all_transcriptions, filename_on_db_and_aws)
     upload_file_to_s3(pdf_transcription_file, AWS_BUCKET, pdf_transcription_file)
+
     cnx = connect_to_mysql()
+    insert_file_into_mysql(cnx, filename_on_db_and_aws, date, user_id, empresa_id)
     if restricted == "sim":
-        insert_file_into_mysql(cnx, filename_on_db_and_aws, date, user_id, empresa_id)
-        attach_file_on_folder_mysql(cnx, filename_on_db_and_aws)
-    else:
-        insert_file_into_mysql(cnx, filename_on_db_and_aws, date, user_id, empresa_id)
+        create_private_folder(cnx, filename_on_db_and_aws)
+        file_folder_attachment(cnx, filename_on_db_and_aws, 'pasta_privada')
 
     for filename in os.listdir(MP3_FOLDER_PATH):
         file_path = os.path.join(MP3_FOLDER_PATH, filename)
@@ -78,7 +78,7 @@ def upload_files():
             logging.info(f"File deleted: {filename}")
     os.remove(f"{filename_on_db_and_aws}.pdf")
     logging.info(f"File deleted: {filename_on_db_and_aws}.pdf")
-    return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restricted, "file_name": user_file_name})
+    return jsonify({"message": f"Arquivo recebido e operacoes feitas com sucesso."})
 
 
 

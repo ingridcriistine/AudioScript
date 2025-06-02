@@ -39,7 +39,7 @@ def connect_to_mysql():
     return cnx
 
 def insert_file_into_mysql(
-        cnx: mysql.connector.connection,
+        cnx: mysql.connector.CMySQLConnection,
         nome: str,
         data_transcricao: str,
         employer_id: int,
@@ -49,14 +49,15 @@ def insert_file_into_mysql(
     query_sql = """USE audioscript"""
     cursor.execute(query_sql)
     query_sql = """
-    INSERT INTO Arquivo (nome, DataTranscricao, Fk_Employer_id, Fk_Empresa_id)
-    VALUES (%s, %s, %s, %s)
+        INSERT INTO Arquivo (nome, DataTranscricao, Fk_Employer_id, Fk_Empresa_id)
+        VALUES (%s, %s, %s, %s)
     """
-    cursor.execute(query_sql, (nome, data_transcricao, 1, 1))
+    cursor.execute(query_sql, (nome, data_transcricao, employer_id, empresa_id))
     cnx.commit()
+    cnx.close()
     logging.info(f"File '{nome}' succesfully inserted into table Arquivo")
 
-def attach_file_on_folder_mysql(cnx: mysql.connector.connection, filename: str):
+def create_private_folder(cnx: mysql.connector.CMySQLConnection):
     cursor = cnx.cursor()
     query_sql = "SELECT id FROM Pasta WHERE Nome = 'pasta_privada'"
     cursor.execute(query_sql)
@@ -65,18 +66,23 @@ def attach_file_on_folder_mysql(cnx: mysql.connector.connection, filename: str):
         query_sql = "INSERT INTO Pasta (Nome, Is_private) VALUES ('pasta_privada', 1)"
         cursor.execute(query_sql)
         cnx.commit()
-        query_sql = "SELECT id FROM Pasta WHERE Nome = 'pasta_privada'"
-        cursor.execute(query_sql)
-        pasta_id = cursor.fetchone()[0]
-    else:
-        pasta_id = result[0]
+        cnx.close()
+
+
+def file_folder_attachment(cnx: mysql.connector.CMySQLConnection,filename: str, foldername: str):
+    cursor = cnx.cursor()
+    query_sql = "SELECT id FROM Pasta WHERE Nome = %s"
+    cursor.execute(query_sql, (foldername,))
+    folder_id = cursor.fetchone()[0]
 
     query_sql = """SELECT id FROM Arquivo WHERE Nome = %s"""
     cursor.execute(query_sql, (filename,))
     file_id = cursor.fetchone()[0]
     query_sql = """UPDATE Arquivo SET Fk_Pasta_Id = %s WHERE id = %s"""
-    cursor.execute(query_sql, (pasta_id, file_id))
+    cursor.execute(query_sql, (folder_id, file_id))
     cnx.commit()
+    cnx.close()
+    logging.info(f"file {filename} attached to folder {foldername}")
 
 if __name__=="__main__":
     cnx = connect_to_mysql()
