@@ -21,7 +21,7 @@ def autenticar():
         cursor = conn.cursor(dictionary=True)
 
         cursor.execute(
-            "SELECT Employer.CodigoFunc, Employer.Fk_Empresa_Id FROM Employer WHERE Employer.CodigoFunc = %s AND Employer.Fk_Empresa_Id = %s",
+            "SELECT Employer.CodigoFunc, Employer.Codigo FROM Employer JOIN Empresa ON Employer.Fk_Empresa_Id = Empresa.Id WHERE Employer.CodigoFunc = %s AND Empresa.Id = %s;",
             (codigoFunc, codigoEmpresa)
         )
 
