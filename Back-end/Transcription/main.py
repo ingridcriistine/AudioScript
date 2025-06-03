@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import assemblyai as aai
 import os
+from typing import Optional
 
 load_dotenv()
 

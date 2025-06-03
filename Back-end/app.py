@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
@@ -11,13 +11,13 @@ from Transcription.main import transcribe_audio
 from datetime import datetime
 import logging
 from routes.login import login_bp
+from typing import Optional
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
 USER = os.getenv("USERAWSRDS")
 PASSWORD = os.getenv("PWDAWSRDS")
 UPLOAD_FOLDER = 'mp3-files'
-MP3_FOLDER_PATH = f'{UPLOAD_FOLDER}/'
 AWS_BUCKET = 'audioscript-s3-bucket'
 
 logging.basicConfig(
@@ -35,15 +35,21 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 @app.route('/api/uploadfiles', methods=['POST'])
-def upload_files():
+def upload_files() -> Optional[Response.json]:
     data = request.form
     restricted = data.get('restrito') 
     user_file_name = data.get('user-file-name')
     user_id = data.get('idUser')
     empresa_id = data.get('idEmpresa')
+
     files = request.files.getlist('files')  
+    if len(files) < 1:
+        raise FileNotFoundError('No file provided')
     for f in files:
         filename = secure_filename(f.filename)
+        _, ext = os.path.splitext(filename)
+        if ext != ".mp3" and ext != ".mp4":
+            raise TypeError(f'File type should be mp3 or mp4 not {ext}')
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         f.save(filepath)
         logging.info(f'file saved on /{UPLOAD_FOLDER}/{f.filename}')
@@ -52,16 +58,23 @@ def upload_files():
     date = str(today.date())
     time = today.time()
     time = time.strftime("%H-%M-%S-%f")
-    mp3_files = os.listdir(MP3_FOLDER_PATH)
+    
+    mp3_files = os.listdir(UPLOAD_FOLDER)
+    if len(mp3_files) < 1:
+        raise FileNotFoundError(f'No files on path {UPLOAD_FOLDER}/')
+
     all_transcriptions = []
     for file in mp3_files:
         timestamp = f'{date}_{time}' 
-        transcription = transcribe_audio(f'{MP3_FOLDER_PATH}/{file}')
+        transcription = transcribe_audio(f'{UPLOAD_FOLDER}/{file}')
         all_transcriptions.append(transcription)
 
     filename_on_db_and_aws = f'{user_file_name}_{timestamp}'
     pdf_transcription_file = create_pdf(all_transcriptions, filename_on_db_and_aws)
-    upload_file_to_s3(pdf_transcription_file, AWS_BUCKET, pdf_transcription_file)
+
+    object_name = upload_file_to_s3(pdf_transcription_file, AWS_BUCKET, pdf_transcription_file)
+    if object_name is not None:
+        logging.info(f'Object {object_name} succesfully uploaded to s3')
 
     if insert_file_into_mysql(filename_on_db_and_aws, date, user_id, empresa_id):
         logging.info(f"File '{filename_on_db_and_aws}' succesfully inserted into table Arquivo")
@@ -72,14 +85,14 @@ def upload_files():
         if attachment_file_folder(filename_on_db_and_aws, 'pasta_privada'):
             logging.info(f'File {filename} attached to folder')
 
-    for filename in os.listdir(MP3_FOLDER_PATH):
-        file_path = os.path.join(MP3_FOLDER_PATH, filename)
-    
+    for filename in os.listdir(UPLOAD_FOLDER):
+        file_path = os.path.join(UPLOAD_FOLDER, filename)
         if os.path.isfile(file_path):
             os.remove(file_path) 
-            logging.info(f"File deleted: {filename}")
+            logging.info(f"Audio file deleted: {filename}")
+
     os.remove(f"{filename_on_db_and_aws}.pdf")
-    logging.info(f"File deleted: {filename_on_db_and_aws}.pdf")
+    logging.info(f"PDF file deleted: {filename_on_db_and_aws}.pdf")
     return jsonify({"message": f"Arquivo recebido e operacoes feitas com sucesso."})
 
 

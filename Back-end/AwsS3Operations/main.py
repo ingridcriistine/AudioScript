@@ -1,6 +1,6 @@
 import boto3
 import os
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, S3
 import logging
 
 
@@ -19,10 +19,9 @@ def upload_file_to_s3(file_path, bucket, object_name=None):
     try:
         response = s3_client.upload_file(file_path, bucket, f'{BUCKET_FOLDER}/{object_name}')
     except ClientError as e:
-        logging.error(e)
-        return False
-    logging.info(f'Object {object_name} uploaded to s3')
-    return True
+        raise e
+    return object_name
+
 
 def download_file_from_s3(bucket, object_name, file_name=None):
     if file_name == None:

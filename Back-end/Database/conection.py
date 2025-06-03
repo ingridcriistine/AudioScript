@@ -2,8 +2,10 @@ from errno import errorcode
 from dotenv import load_dotenv
 import os 
 import mysql.connector
+from mysql.connector import CMySQLConnection
 from mysql.connector import errorcode
 import logging
+from typing import Optional
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
@@ -16,7 +18,7 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S' 
 )
 
-def connect_to_mysql():
+def connect_to_mysql() -> Optional[CMySQLConnection]:
     try:
         cnx = mysql.connector.connect(
             user='matias',
