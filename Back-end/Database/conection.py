@@ -45,6 +45,7 @@ def insert_file_into_mysql(
         employer_id: int,
         empresa_id: int
     ) -> bool:
+
     try:
         cnx = connect_to_mysql()
         if cnx.connection_id is None:

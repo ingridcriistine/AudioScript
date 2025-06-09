@@ -41,7 +41,7 @@ export default function Home() {
         return;
       }
 
-      localStorage.setItem("idUsuario", result.usuario.id);
+      localStorage.setItem("idUsuario", result.usuario.employerId);
       localStorage.setItem("idEmpresa", result.usuario.empresaId);
 
       alert(result.mensagem || "Login realizado com sucesso");

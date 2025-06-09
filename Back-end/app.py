@@ -68,7 +68,6 @@ def upload_files() -> Optional[Response.json]:
         timestamp = f'{date}_{time}' 
         transcription = transcribe_audio(f'{UPLOAD_FOLDER}/{file}')
         all_transcriptions.append(transcription)
-
     filename_on_db_and_aws = f'{user_file_name}_{timestamp}'
     pdf_transcription_file = create_pdf(all_transcriptions, filename_on_db_and_aws)
 
@@ -80,7 +79,7 @@ def upload_files() -> Optional[Response.json]:
         logging.info(f"File '{filename_on_db_and_aws}' succesfully inserted into table Arquivo")
 
     if restricted == "sim":
-        if create_private_folder(filename_on_db_and_aws):
+        if create_private_folder():
             logging.info('Private folder sucesfully created on MySQL')
         if attachment_file_folder(filename_on_db_and_aws, 'pasta_privada'):
             logging.info(f'File {filename} attached to folder')

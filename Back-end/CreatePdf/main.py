@@ -6,9 +6,6 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from dotenv import load_dotenv
 from assemblyai import Transcript
 
-
-file = "/home/matiaszuniga/Downloads/audiotest.mp3"
-
 styles = getSampleStyleSheet()
 title_style = ParagraphStyle(
     name='TitleStyle',

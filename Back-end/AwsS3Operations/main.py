@@ -1,6 +1,6 @@
 import boto3
 import os
-from botocore.exceptions import ClientError, S3
+from botocore.exceptions import ClientError
 import logging
 
 

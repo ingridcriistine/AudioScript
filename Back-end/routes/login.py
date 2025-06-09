@@ -13,6 +13,8 @@ def autenticar():
     codigoEmpresa = dados.get('codEmpresa')
     codigoFunc = dados.get('codFuncionario')
 
+    print(codigoFunc)
+    print(codigoEmpresa)
     if not codigoEmpresa or not codigoFunc:
         return jsonify({"erro": "Campos obrigatórios não enviados"}), 400
 
@@ -22,22 +24,22 @@ def autenticar():
 
         cursor.execute(
             """
-            SELECT 
-                Employer.CodigoFunc, 
-                Employer.Fk_Empresa_Id 
-            FROM Employer 
-            WHERE 
-                Employer.CodigoFunc = %s AND Empresa.Id = %s;
+                SELECT 
+                    Employer.Id AS employerId, 
+                    Empresa.Id AS empresaId
+                FROM 
+                    Employer 
+                JOIN 
+                    Empresa ON Employer.Fk_Empresa_Id = Empresa.Id 
+                WHERE 
+                    Employer.CodigoFunc = %s AND Empresa.Codigo = %s;
             """,
             (codigoFunc, codigoEmpresa)
         )
 
-        result = cursor.fetchone()
-        cursor.close()
-        conn.close()
-
-        if result:
-            return jsonify({"mensagem": "Login bem-sucedido", "usuario": result})
+        resultado = cursor.fetchone()
+        if resultado:
+            return jsonify({"mensagem": "Login bem-sucedido", "usuario": resultado})
         else:
             return jsonify({"erro": "Usuário ou senha inválidos"}), 401
 
