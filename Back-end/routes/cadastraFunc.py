@@ -25,7 +25,8 @@ def autenticar():
         cursor = conn.cursor(dictionary=True)
 
         cursor.execute(
-            # codigo de insert
+            "INSERT INTO Employer (Nome, codigoFunc, Email) VALUES (%s, %s. %s)",
+            (nomeColaborador, codColaborador, emailColaborador)
         )
 
         resultado = cursor.fetchone()
@@ -35,8 +36,8 @@ def autenticar():
         if resultado:
             return jsonify({"mensagem": "Usuario cadastrado com sucecsso"})
         else:
-            return jsonify({"erro": "Usuário ou senha inválidos"}), 401
+            return jsonify({"erro": "Erro ao cdastar"}), 401
 
     except Exception as e:
-        print("Erro no login:", e)
+        print("Erro ao cadastrar:", e)
         return jsonify({"erro": "Erro interno no servidor"}), 500
