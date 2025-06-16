@@ -1,3 +1,7 @@
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import random
+import smtplib
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
@@ -20,6 +24,8 @@ PASSWORD = os.getenv("PWDAWSRDS")
 UPLOAD_FOLDER = 'mp3-files'
 MP3_FOLDER_PATH = f'{UPLOAD_FOLDER}/'
 AWS_BUCKET = 'audioscript-s3-bucket'
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASS = os.getenv("EMAIL_PASS")
 
 logging.basicConfig(
     level=logging.INFO,
@@ -82,6 +88,46 @@ def upload_files():
     return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restricted, "file_name": user_file_name})
 
 
+def enviar_codigo():
+    data = request.get_json()
+    nome = data.get('name')
+    email = data.get('email')
+    empresa = data.get('company')
+
+    if not email:
+        return jsonify({"error": "Email obrigatório"}), 400
+
+    codigo = random.randint(100000, 999999)
+
+    remetente = EMAIL_USER
+    senha = EMAIL_PASS
+
+    mensagem = MIMEMultipart("alternative")
+    mensagem["Subject"] = "Seu código de acesso"
+    mensagem["From"] = remetente
+    mensagem["To"] = email
+
+    html = f"""
+    <html>
+    <body>
+        <h2>Olá {nome or ''},</h2>
+        <p>Seu código de acesso é:</p>
+        <h1 style="color: #FFA500;">{codigo}</h1>
+        <p>Use este código para acessar a plataforma.</p>
+    </body>
+    </html>
+    """
+
+    mensagem.attach(MIMEText(html, "html"))
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(remetente, senha)
+            server.sendmail(remetente, email, mensagem.as_string())
+        return jsonify({"success": True, "codigo": codigo}), 200
+    except Exception as e:
+        print("Erro ao enviar:", e)
+        return jsonify({"error": "Erro ao enviar e-mail"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

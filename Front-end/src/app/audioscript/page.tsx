@@ -10,6 +10,7 @@ import Logo from "@/assets/Logo.png"
 import Cloud from "@/assets/cloud.png"
 import Watch from "@/assets/watch.png"
 import Precision from "@/assets/precision.png"
+import { useState } from "react";
 
 type Arquivo = {
     file: File
@@ -18,6 +19,44 @@ type Arquivo = {
 };
 
 export default function Audioscript() {
+
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [company, setCompany] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+            const res = await fetch('http://localhost:5000/enviar-codigo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    company
+                }),
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                alert(`Código enviado para seu e-mail! Código: ${data.codigo}`);
+                setName("");
+                setEmail("");
+                setCompany("");
+            } else {
+                alert(data.error || 'Erro ao enviar e-mail');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro na conexão com o servidor');
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     return (
         <>
@@ -94,20 +133,45 @@ export default function Audioscript() {
                         </div>
                     </div>
                 </div>
-                <form id="form-section" className="flex flex-col w-[50%] p-8 pr-16 pl-16">
+                <form onSubmit={handleSubmit} className="flex flex-col w-[50%] p-8 pr-16 pl-16">
                     <h2 className="font-bold">Informações pessoais</h2>
+
                     <div className="flex flex-col justify-center pt-12 pb-12">
                         <label className="mt-4">Nome</label>
-                        <input placeholder="Seu nome" className="bg-[#272727] p-1 pl-4 mt-2" />
+                        <input
+                            placeholder="Seu nome"
+                            className="bg-[#272727] p-1 pl-4 mt-2"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+
                         <label className="mt-4">Empresa</label>
-                        <input placeholder="Nome da empresa" className="bg-[#272727] p-1 pl-4 mt-2" />
+                        <input
+                            placeholder="Nome da empresa"
+                            className="bg-[#272727] p-1 pl-4 mt-2"
+                            value={company}
+                            onChange={(e) => setCompany(e.target.value)}
+                        />
+
                         <label className="mt-4">E-mail</label>
-                        <input placeholder="Seu e-mail" className="bg-[#272727] p-1 pl-4 mt-2" />
+                        <input
+                            placeholder="Seu e-mail"
+                            className="bg-[#272727] p-1 pl-4 mt-2"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
                     </div>
-                    <button className="cursor-pointer bg-amber-600 p-2 pl-4 pr-4 rounded-[5px] hover:opacity-[85%]">
-                        <h2>Enviar</h2>
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className={`cursor-pointer bg-amber-600 p-2 pl-4 pr-4 rounded-[5px] hover:opacity-[85%] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                        {loading ? 'Enviando...' : 'Enviar'}
                     </button>
                 </form>
+
             </div>
         </>
     );
