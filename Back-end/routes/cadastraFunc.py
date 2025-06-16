@@ -3,9 +3,28 @@ from flask import Blueprint, request, jsonify
 from Database.conection import connect_to_mysql
 cadastraFunc_bp = Blueprint('cadastraFunc', __name__, url_prefix='/cadastraFunc')
 
-@cadastraFunc_bp.route('/', methods=['GET'])
-def cadastraFunc_form():
-    return 'Página de cadastraFunc (simples)'
+getFunc_bp = Blueprint('user', __name__, url_prefix='/user')
+
+@getFunc_bp.route('/<int:funcId>', methods=['GET'])
+def getFunc(funcId):
+    try:
+        conn = connect_to_mysql()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT nome FROM Emplyer WHERE id = %i", (funcId,))
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if result:
+            return {"nome": result["nome"]}
+        else:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+    except Exception as e:
+        print("Erro ao buscar funcionario", e)
+        return jsonify({"erro": "Erro interno no servidor"}), 500
 
 @cadastraFunc_bp.route('/auth', methods=['POST'])
 def autenticar():

@@ -34,10 +34,10 @@ export default function TelaInicial() {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const idUsuario = localStorage.getItem("idUsuario");
-  const idEmpresa = localStorage.getItem("idEmpresa");
+  const idEmpresa = localStorage.getItem("Codigo");
+  const codFunc = localStorage.getItem("CodigoFunc");
 
-  if (!idUsuario || !idEmpresa) {
+  if (!codFunc || !idEmpresa) {
     alert("Erro: ID do usuário ou da empresa não encontrado. Faça login novamente.");
     return;
   }
@@ -77,7 +77,7 @@ export default function TelaInicial() {
     const customFileName = document.getElementById('customFileName') as HTMLInputElement
     formData.append('user-file-name', customFileName.value)
     formData.append('restrito', restrito);
-    formData.append('idUser', idUsuario);
+    formData.append('codFunc', codFunc);
     formData.append('idEmpresa', idEmpresa);
 
     try {

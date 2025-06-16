@@ -41,8 +41,12 @@ export default function Home() {
         return;
       }
 
-      localStorage.setItem("idUsuario", result.usuario.id);
-      localStorage.setItem("idEmpresa", result.usuario.empresaId);
+      localStorage.setItem("Codigo", result.usuario.Codigo);
+      localStorage.setItem("CodigoFunc", result.usuario.CodigoFunc);
+      localStorage.setItem("Id", result.usuario.Id);
+
+
+      console.log(result.usuario.id)
 
       alert(result.mensagem || "Login realizado com sucesso");
       console.log("Usuário autenticado:", result.usuario);
