@@ -172,7 +172,7 @@ export default function TelaInicial() {
                 </div>
               </div>
 
-              <button className="bg-amber-600 p-3 rounded-xl cursor-pointer w-[50%]" onClick={handleUpload}>
+              <button className="bg-amber-600 p-3 rounded-xl cursor-pointer w-[50%] hover:opacity-[85%]" onClick={handleUpload}>
                 Transcrever
               </button>
             </div>
