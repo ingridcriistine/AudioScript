@@ -9,12 +9,10 @@ def cadastraFunc_form():
 
 @cadastraFunc_bp.route('/auth', methods=['POST'])
 def autenticar():
-    dados = request.json
+    dados = request.jsons
     nomeColaborador = dados.get('nomeColaborador')
     codColaborador = dados.get('codColaborador')
     emailColaborador = dados.get('emailColaborador')
-    
-    
     
     if not nomeColaborador or not codColaborador or not emailColaborador:
         return jsonify({"erro": "Campos obrigatórios não enviados"}), 400

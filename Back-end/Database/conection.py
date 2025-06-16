@@ -20,7 +20,7 @@ logging.basicConfig(
 def connect_to_mysql():
     try:
         cnx = mysql.connector.connect(
-            user='matias',
+            user='root',
             password='root',
             host="127.0.0.1",
             port=3306,
