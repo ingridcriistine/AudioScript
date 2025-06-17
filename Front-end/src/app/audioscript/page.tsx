@@ -30,7 +30,7 @@ export default function Audioscript() {
         setLoading(true);
 
         try {
-            const res = await fetch('http://localhost:5000/enviar-codigo', {
+            const res = await fetch('http://localhost:5000/api/criar-empresa', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -42,7 +42,7 @@ export default function Audioscript() {
 
             const data = await res.json();
             if (res.ok) {
-                alert(`Código enviado para seu e-mail! Código: ${data.codigo}`);
+                alert("Código enviado para seu e-mail!");
                 setName("");
                 setEmail("");
                 setCompany("");
@@ -134,17 +134,9 @@ export default function Audioscript() {
                     </div>
                 </div>
                 <form onSubmit={handleSubmit} className="flex flex-col w-[50%] p-8 pr-16 pl-16">
-                    <h2 className="font-bold">Informações pessoais</h2>
+                    <h2 className="font-bold">Informações de cadastro</h2>
 
                     <div className="flex flex-col justify-center pt-12 pb-12">
-                        <label className="mt-4">Nome</label>
-                        <input
-                            placeholder="Seu nome"
-                            className="bg-[#272727] p-1 pl-4 mt-2"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
-
                         <label className="mt-4">Empresa</label>
                         <input
                             placeholder="Nome da empresa"
