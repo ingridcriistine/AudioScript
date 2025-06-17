@@ -6,7 +6,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
-import mysql
+import mysql.connector
 from werkzeug.utils import secure_filename
 from Conversor.main import transform_mp4_to_mp3
 from Database.conection import connect_to_mysql, insert_file_into_mysql, attach_file_on_folder_mysql
@@ -29,10 +29,11 @@ EMAIL_USER = os.getenv("EMAIL_USER")
 EMAIL_PASS = os.getenv("EMAIL_PASS")
 
 db_config = {
-    'host': HOST,
-    'user': USER,
-    'password': PASSWORD,
-    'database': 'AWS_BUCKET'  
+    'host': 'localhost',
+    'port': 3307,
+    'user': 'root',
+    'password': 'root',
+    'database': 'AudioScript'
 }
 
 logging.basicConfig(
@@ -107,14 +108,13 @@ def criar_empresa():
 
     codigo_empresa = str(random.randint(100000, 999999))
     codigo_funcionario = random.randint(1000, 9999)
-
     nome_admin = f"Adm{nome_empresa.replace(' ', '')}"
-    
+
     connection = None
     cursor = None
 
     try:
-        connection = mysql.connector.connect(**db_config)
+        connection = connect_to_mysql()  # Usa sua função padrão
         cursor = connection.cursor()
 
         cursor.execute(
@@ -145,13 +145,14 @@ def criar_empresa():
 
     except mysql.connector.Error as err:
         print("Erro no banco:", err)
-        return jsonify({"error": "Erro no banco de dados"}), 500
+        return jsonify({"error": str(err)}), 500
 
     finally:
         if cursor:
             cursor.close()
         if connection and connection.is_connected():
             connection.close()
+
 
 
 def enviar_email_com_dados(nome_empresa, nome_admin, email, codigo_empresa, codigo_funcionario):

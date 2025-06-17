@@ -2,7 +2,7 @@ from errno import errorcode
 from dotenv import load_dotenv
 import os 
 import mysql.connector
-from mysql.connector import errorcode
+from mysql.connector import Error
 import mysql.connector.cursor
 import logging
 
@@ -20,23 +20,22 @@ logging.basicConfig(
 def connect_to_mysql():
     try:
         cnx = mysql.connector.connect(
-            user='root',
-            password='root',
-            host="127.0.0.1",
-            port=3307,
-            database='audioscript'
+            host="localhost",
+            port=3306,
+            user="root",
+            password="root",
+            database="AudioScript"
         )
-        
-    except mysql.connector.Error as e:
-        if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            logging.error("Something is wrong with your user name or password")
-        elif e.errno == errorcode.ER_BAD_DB_ERROR:
-            logging.error("Database does not exist")
+        if cnx.is_connected():
+            print("✅ Conectado ao banco com sucesso!")
+            return cnx
         else:
-            logging.error(e)
-    if cnx.connection_id != None:
-        logging.info("Succesfully connected into mysql.")
-    return cnx
+            print("❌ Falha na conexão com o banco.")
+            return None
+
+    except Error as err:
+        print(f"❌ Erro ao conectar ao banco: {err}")
+        return None
 
 def insert_file_into_mysql(
         cnx: mysql.connector.connection,
