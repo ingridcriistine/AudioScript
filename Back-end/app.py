@@ -11,6 +11,7 @@ from Transcription.main import transcribe_audio
 from datetime import datetime
 import logging
 from routes.login import login_bp
+from routes.cadastraFunc import getFunc_bp
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
@@ -31,6 +32,8 @@ CORS(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 app.register_blueprint(login_bp) 
+app.register_blueprint(getFunc_bp) 
+
 # chamando login
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)

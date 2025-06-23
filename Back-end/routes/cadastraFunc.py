@@ -1,31 +1,38 @@
 # routes/login.py
 from flask import Blueprint, request, jsonify
 from Database.conection import connect_to_mysql
+
 cadastraFunc_bp = Blueprint('cadastraFunc', __name__, url_prefix='/cadastraFunc')
 
 getFunc_bp = Blueprint('user', __name__, url_prefix='/user')
 
-@getFunc_bp.route('/<int:userId>', methods=['GET'])
+@getFunc_bp.route('', methods=['GET'])
+def testeGet():
+        return 'a'
+
+@getFunc_bp.route('/<userId>', methods=['GET'])
 def getFunc(userId):
     try:
         conn = connect_to_mysql()
         cursor = conn.cursor(dictionary=True)
 
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT Nome FROM Employer WHERE id = %s", (userId,))
+        print(userId)
+
+        cursor.execute("""SELECT Nome FROM Employer WHERE Id = %s""", (userId,))
         result = cursor.fetchone()
         cursor.close()
         conn.close()
-        
+
         if result:
-            return {"nome": result["Nome"]}
+            return jsonify({"nome": result["Nome"]})
         else:
-            print("nada nada");
+            print("Usuário não encontrado.")
             return jsonify({"erro": "Usuário não encontrado"}), 404
 
     except Exception as e:
-        print("Erro ao buscar funcionario", e)
+        print("Erro ao buscar funcionário:", e)
         return jsonify({"erro": "Erro interno no servidor"}), 500
+
 
 @cadastraFunc_bp.route('/cadastrar', methods=['POST'])
 def autenticar():
