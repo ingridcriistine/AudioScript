@@ -5,28 +5,29 @@ cadastraFunc_bp = Blueprint('cadastraFunc', __name__, url_prefix='/cadastraFunc'
 
 getFunc_bp = Blueprint('user', __name__, url_prefix='/user')
 
-@getFunc_bp.route('/<int:funcId>', methods=['GET'])
-def getFunc(funcId):
+@getFunc_bp.route('/<int:userId>', methods=['GET'])
+def getFunc(userId):
     try:
         conn = connect_to_mysql()
         cursor = conn.cursor(dictionary=True)
 
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT nome FROM Emplyer WHERE id = %i", (funcId,))
+        cursor.execute("SELECT Nome FROM Employer WHERE id = %s", (userId,))
         result = cursor.fetchone()
         cursor.close()
         conn.close()
-
+        
         if result:
-            return {"nome": result["nome"]}
+            return {"nome": result["Nome"]}
         else:
-            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+            print("nada nada");
+            return jsonify({"erro": "Usuário não encontrado"}), 404
 
     except Exception as e:
         print("Erro ao buscar funcionario", e)
         return jsonify({"erro": "Erro interno no servidor"}), 500
 
-@cadastraFunc_bp.route('/auth', methods=['POST'])
+@cadastraFunc_bp.route('/cadastrar', methods=['POST'])
 def autenticar():
     dados = request.jsons
     nomeColaborador = dados.get('nomeColaborador')
@@ -42,7 +43,7 @@ def autenticar():
         cursor = conn.cursor(dictionary=True)
 
         cursor.execute(
-            "INSERT INTO Employer (Nome, codigoFunc, Email) VALUES (%s, %s. %s)",
+            "INSERT INTO Employer (Nome, codigoFunc, Email) VALUES (%s, %s, %s)",
             (nomeColaborador, codColaborador, emailColaborador)
         )
 
@@ -53,7 +54,7 @@ def autenticar():
         if resultado:
             return jsonify({"mensagem": "Usuario cadastrado com sucecsso"})
         else:
-            return jsonify({"erro": "Erro ao cdastar"}), 401
+            return jsonify({"erro": "Erro ao cadastar"}), 401
 
     except Exception as e:
         print("Erro ao cadastrar:", e)
