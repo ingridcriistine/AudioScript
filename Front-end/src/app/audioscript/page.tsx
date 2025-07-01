@@ -10,7 +10,11 @@ import Logo from "@/assets/Logo.png"
 import Cloud from "@/assets/cloud.png"
 import Watch from "@/assets/watch.png"
 import Precision from "@/assets/precision.png"
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import MoonDark from "@/assets/moon-dark.png"
+import MoonWhite from "@/assets/moon-white.png"
+import SunWhite from "@/assets/sun-white.png"
+import SunDark from "@/assets/sun-black.png"
 
 type Arquivo = {
     file: File
@@ -24,6 +28,27 @@ export default function Audioscript() {
     const [email, setEmail] = useState("");
     const [company, setCompany] = useState("");
     const [loading, setLoading] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        if (typeof window !== "undefined") {
+            try {
+                const storedTheme = localStorage.getItem("theme");
+                return storedTheme !== null ? JSON.parse(storedTheme) : true;
+            } catch (err) {
+                console.warn("Erro ao carregar tema:", err);
+                return true;
+            }
+        }
+        return true;
+    });
+
+
+    const toggleTheme = () => {
+        setIsDarkMode((prev: any) => !prev);
+    };
+
+    useEffect(() => {
+        localStorage.setItem("theme", JSON.stringify(isDarkMode));
+    }, [isDarkMode]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -59,7 +84,7 @@ export default function Audioscript() {
 
 
     return (
-        <>
+        <div className={isDarkMode ? "bg-[#181717]" : "bg-white"}>
             <div className="bg-[#272727] items-center flex justify-between text-amber-50 w-full h-20 shadow-lg shadow-gray-900/50 z-10 fixed top-0 left-0">
                 <div className="flex">
                     <Image src={Logo} alt={"Logo"} className="w-[180px]" />
@@ -74,6 +99,9 @@ export default function Audioscript() {
                             <h2>Comece a usar</h2>
                         </button>
                     </a>
+                    <button className="w-[25px] cursor-pointer" onClick={toggleTheme}>
+                        <Image src={isDarkMode ? SunWhite : MoonWhite} alt="theme icon" />
+                    </button>
                 </div>
             </div>
 
@@ -93,7 +121,7 @@ export default function Audioscript() {
                 </div>
             </div>
 
-            <div className="m-14 mt-0 p-4 pb-24">
+            <div className={isDarkMode ? "m-14 mt-0 p-4 pb-24 text-white" : "m-14 mt-0 p-4 pb-24 text-black"}>
                 <h1 className="font-bold pb-24 pt-2 text-[18px]">Por que usar nosso software?</h1>
                 <div className="flex justify-center">
                     <div className="flex flex-col items-center text-center pl-12 pr-12 w-[30%]">
@@ -133,14 +161,14 @@ export default function Audioscript() {
                         </div>
                     </div>
                 </div>
-                <form onSubmit={handleSubmit} className="flex flex-col w-[50%] p-8 pr-16 pl-16">
-                    <h2 className="font-bold">Informações de cadastro</h2>
+                <form onSubmit={handleSubmit} className={isDarkMode ? "flex flex-col w-[50%] p-8 pr-16 pl-16 text-white" : "flex flex-col w-[50%] p-8 pr-16 pl-16 text-black"}>
+                    <h2 className={isDarkMode ? "font-bold text-[18px]" : "font-bold text-black text-[18px]"}>Informações de cadastro</h2>
 
                     <div className="flex flex-col justify-center pt-12 pb-12">
                         <label className="mt-4">Empresa</label>
                         <input
                             placeholder="Nome da empresa"
-                            className="bg-[#272727] p-1 pl-4 mt-2"
+                            className={isDarkMode ? "bg-[#272727] p-1 pl-4 mt-2" : "bg-white p-1 pl-4 mt-2 border-1 border-gray-950"}
                             value={company}
                             onChange={(e) => setCompany(e.target.value)}
                         />
@@ -148,7 +176,7 @@ export default function Audioscript() {
                         <label className="mt-4">E-mail</label>
                         <input
                             placeholder="Seu e-mail"
-                            className="bg-[#272727] p-1 pl-4 mt-2"
+                            className={isDarkMode ? "bg-[#272727] p-1 pl-4 mt-2" : "bg-white p-1 pl-4 mt-2 border-1 border-gray-950"}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
@@ -165,6 +193,6 @@ export default function Audioscript() {
                 </form>
 
             </div>
-        </>
+        </div>
     );
 }
