@@ -1,11 +1,11 @@
 "use client"
 import { Menu } from "@/components/menu";
 import { Submenu } from "@/components/submenu";
-import { Colaborador } from "@/components/tabelaColaboradores";
+import { Colaborador, Linha } from "@/components/tabelaColaboradores";
 import Image from "next/image";
 import search from "@/assets/search.png"
 import add from "@/assets/add.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Colaboradores(){
 
@@ -24,9 +24,36 @@ export default function Colaboradores(){
         setModal(true);
     }
 
+    const [todosColaboradores, setTodosColaboradores] = useState<Linha[]>([]);
+    const [loading, setLoading] = useState(true);
+    // const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/user"); // Sua rota para todos os funcionários
+                
+                if (!response.ok) throw new Error("Falha ao buscar dados.");
+                const data = await response.json();
+                setTodosColaboradores(data);
+
+            } catch (err) {
+                // setError("Erro ao carregar colaboradores.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    // if (loading) return <div>Carregando tabela...</div>;
+    // if (error) return <div style={{ color: 'red' }}>{error}</div>;
+    // if (todosColaboradores.length === 0) return <div>Nenhum colaborador para exibir.</div>;
+
+
     const Cadastrar = async () => {
         try{
-            const response =  await fetch('http://localhost:8080/cadastraFunc',{
+            const response =  await fetch('http://localhost:5000/cadastraFunc',{
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -47,7 +74,6 @@ export default function Colaboradores(){
                 setEmailColaborador("")
                 alert(result.message);
             } else {
-                // sessionStorage.setItem("Token", "Bearer " + result.token)
                 setError(false);
                 setCodColaborador("")
                 setNomeColaborador("")
@@ -98,7 +124,13 @@ export default function Colaboradores(){
                             <span className="flex bg-[#272725] rounded-sm p-2 w-[40%] h-8 items-center">Email</span>
                         </div>
 
-                        <Colaborador id={"a"} name={"a"} email={"a"}></Colaborador>
+                        {todosColaboradores.map((colaborador) => (
+                            <Colaborador 
+                                Id={colaborador.Id}
+                                Name={colaborador.Name}
+                                Email={colaborador.Email}
+                            />
+                        ))}
                     </div>
                 </div>
 

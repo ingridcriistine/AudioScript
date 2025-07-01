@@ -3,12 +3,28 @@ from flask import Blueprint, request, jsonify
 from Database.conection import connect_to_mysql
 
 cadastraFunc_bp = Blueprint('cadastraFunc', __name__, url_prefix='/cadastraFunc')
-
 getFunc_bp = Blueprint('user', __name__, url_prefix='/user')
 
 @getFunc_bp.route('', methods=['GET'])
-def testeGet():
-        return 'a'
+def getAllFunc(): 
+    try:
+        conn = connect_to_mysql()
+        cursor = conn.cursor(dictionary=True) 
+        cursor.execute("SELECT Id, Nome, CodigoFunc, Email FROM Employer") 
+        
+        results = cursor.fetchall() 
+        cursor.close()
+        conn.close()
+
+        if results:
+            return jsonify(results) 
+        else:
+            print("Nenhum funcionário encontrado.")
+            return jsonify({"mensagem": "Nenhum funcionário encontrado"}), 200 # Retorna 200 OK mesmo que vazio
+
+    except Exception as e:
+        print("Erro ao buscar funcionários:", e)
+        return jsonify({"erro": "Erro interno no servidor"}), 500
 
 @getFunc_bp.route('/<userId>', methods=['GET'])
 def getFunc(userId):
@@ -34,9 +50,9 @@ def getFunc(userId):
         return jsonify({"erro": "Erro interno no servidor"}), 500
 
 
-@cadastraFunc_bp.route('/cadastrar', methods=['POST'])
-def autenticar():
-    dados = request.jsons
+@cadastraFunc_bp.route('',methods=['POST'])
+def cadastrar():
+    dados = request.json
     nomeColaborador = dados.get('nomeColaborador')
     codColaborador = dados.get('codColaborador')
     emailColaborador = dados.get('emailColaborador')
@@ -57,6 +73,7 @@ def autenticar():
         resultado = cursor.fetchone()
         cursor.close()
         conn.close()
+        
 
         if resultado:
             return jsonify({"mensagem": "Usuario cadastrado com sucecsso"})

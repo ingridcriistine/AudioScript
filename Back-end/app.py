@@ -12,6 +12,7 @@ from datetime import datetime
 import logging
 from routes.login import login_bp
 from routes.cadastraFunc import getFunc_bp
+from routes.cadastraFunc import cadastraFunc_bp
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
@@ -33,6 +34,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 app.register_blueprint(login_bp) 
 app.register_blueprint(getFunc_bp) 
+app.register_blueprint(cadastraFunc_bp) 
 
 # chamando login
 

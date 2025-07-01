@@ -11,11 +11,12 @@ export const Menu = () => {
 const [userName, setUserName] = useState('Carregando...');
 
     useEffect(() => {
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem('Id');
+    console.log()
 
     if (!userId) return;
 
-    fetch(`http://localhost:5000/getFunc/${userId}`, {
+    fetch(`http://localhost:5000/user/${userId}`, {
         method: "GET",
         headers: {
         "Content-Type": "application/json",
