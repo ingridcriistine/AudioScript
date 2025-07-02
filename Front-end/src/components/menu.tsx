@@ -28,13 +28,17 @@ export const Menu = () => {
 
 
     const toggleTheme = () => {
-        setIsDarkMode((prev: any) => !prev);
+        setIsDarkMode((prev: any) => {
+            const updated = !prev;
+            localStorage.setItem("theme", JSON.stringify(updated));
+            window.dispatchEvent(new Event("themeChanged"));       
+            return updated;
+        });
     };
-
     useEffect(() => {
         localStorage.setItem("theme", JSON.stringify(isDarkMode));
     }, [isDarkMode]);
-    
+
     return (
         <>
             <div className="bg-[#272727] items-center flex justify-between text-amber-50 w-full h-20 shadow-lg shadow-gray-900/50 z-10 p-6 fixed top-0 left-0">

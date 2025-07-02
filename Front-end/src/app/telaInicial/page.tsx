@@ -1,7 +1,7 @@
 "use client"
 import { Menu } from "@/components/menu";
 import { Submenu } from "@/components/submenu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRef } from "react";
 import Lixeira from "@/assets/bin.png";
 import { ArquivoItem } from "@/components/upaloadArquivo";
@@ -19,17 +19,40 @@ export default function TelaInicial() {
   const [restrito, setRestrito] = useState<"sim" | "nao" | "">("");
   const [filename, setFilename] = useState<string>("");
   const [modal, setModal] = useState(false);
-  
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const updateTheme = () => {
+      const storedTheme = localStorage.getItem('theme');
+      console.log("Evento 'themeChanged' capturado. Novo tema:", storedTheme);
+      if (storedTheme !== null) {
+        try {
+          const parsedTheme = JSON.parse(storedTheme);
+          setIsDarkMode(parsedTheme);
+        } catch (error) {
+          console.error("Erro ao fazer parse do tema no localStorage:", error);
+          setIsDarkMode(false);
+        }
+      }
+    };
+
+    updateTheme();
+    window.addEventListener("themeChanged", updateTheme);
+
+    return () => window.removeEventListener("themeChanged", updateTheme);
+  }, []);
+
+
   const closeModal = () => {
-      setModal(false);
+    setModal(false);
   }
 
   const openModal = () => {
-      setModal(true);
+    setModal(true);
 
-      setTimeout(() => {
-        closeModal();
-      }, 2000);
+    setTimeout(() => {
+      closeModal();
+    }, 2000);
   }
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -70,10 +93,10 @@ export default function TelaInicial() {
   const handleUpload = async () => {
     openModal();
     const formData = new FormData();
-    for (let i = 0; i < arquivos.length; i++){
+    for (let i = 0; i < arquivos.length; i++) {
       formData.append('files', arquivos[i].file)
     }
-    
+
     const customFileName = document.getElementById('customFileName') as HTMLInputElement
     formData.append('user-file-name', customFileName.value)
     formData.append('restrito', restrito);
@@ -100,98 +123,98 @@ export default function TelaInicial() {
 
   }
 
-    return (
-      <>
-        <Menu />
-        <div className="flex">
-          <Submenu />
-          <div className="flex w-full">
-            <div className="flex flex-col w-[50%] p-8 gap-8 text-white pt-[150px] pl-[80px]">
-              <div className="flex flex-col w-[50%] ">
-                <button onClick={handleButtonClick}
-                  className="bg-[#272727] rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-[#333333]"
-                >
-                  Escolher arquivos
-                </button>
-
-                <input
-                  type="file"
-                  multiple
-                  onChange={handleFileChange}
-                  ref={fileInputRef}
-                  className="hidden"
-                />
-
-                <ul className="mt-2 gap-2 flex flex-col w-full overflow-x-auto max-h-[280px]">
-                  {arquivos.map((arquivo) => (
-                    <ArquivoItem
-                      key={arquivo.id}
-                      id={arquivo.id}
-                      name={arquivo.name}
-                      onExcluir={handleExcluirArquivo}
-                    />
-                  ))}
-                </ul>
-
-              </div>
-
-              <div className="flex flex-col gap-2 w-full">
-                <label htmlFor="">Nome do arquivo transcrito</label>
-                <input
-                  type="text"
-                  className="flex text-white border rounded-sm p-1 border-amber-50 w-[50%]"
-                  id="customFileName"
-                />
-              </div>
-
-              {/* Seleção de arquivo restrito */}
-              <div className="flex gap-2 mt-4">
-                <h1>Arquivo Restrito: </h1>
-                <div className="flex gap-5">
-                  <label>
-                    <input
-                      type="radio"
-                      name="restrito"
-                      value="sim"
-                      checked={restrito === "sim"}
-                      onChange={handleRestritoChange}
-                    />
-                    Sim
-                  </label>
-
-                  <label>
-                    <input
-                      type="radio"
-                      name="restrito"
-                      value="nao"
-                      checked={restrito === "nao"}
-                      onChange={handleRestritoChange}
-                    />
-                    Não
-                  </label>
-                </div>
-              </div>
-
-              <button className="bg-amber-600 p-3 rounded-xl cursor-pointer w-[50%] hover:opacity-[85%]" onClick={handleUpload}>
-                Transcrever
+  return (
+    <div className={isDarkMode ? "bg-[#181717] z-0 text-white" : "bg-white z-0 text-black"}>
+      <Menu />
+      <div className="flex">
+        <Submenu />
+        <div className="flex w-full">
+          <div className="flex flex-col w-[50%] p-8 gap-8 text-white pt-[150px] pl-[80px]">
+            <div className="flex flex-col w-[50%] ">
+              <button onClick={handleButtonClick}
+                className="bg-[#272727] rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-[#333333]"
+              >
+                Escolher arquivos
               </button>
+
+              <input
+                type="file"
+                multiple
+                onChange={handleFileChange}
+                ref={fileInputRef}
+                className="hidden"
+              />
+
+              <ul className="mt-2 gap-2 flex flex-col w-full overflow-x-auto max-h-[280px]">
+                {arquivos.map((arquivo) => (
+                  <ArquivoItem
+                    key={arquivo.id}
+                    id={arquivo.id}
+                    name={arquivo.name}
+                    onExcluir={handleExcluirArquivo}
+                  />
+                ))}
+              </ul>
+
             </div>
 
-            <div className="w-[50%] flex pt-[150px] p-4 ">
-              <div className=" bg-white w-[80%]"></div>
+            <div className="flex flex-col gap-2 w-full">
+              <label htmlFor="">Nome do arquivo transcrito</label>
+              <input
+                type="text"
+                className="flex text-white border rounded-sm p-1 border-amber-50 w-[50%]"
+                id="customFileName"
+              />
             </div>
+
+            {/* Seleção de arquivo restrito */}
+            <div className="flex gap-2 mt-4">
+              <h1>Arquivo Restrito: </h1>
+              <div className="flex gap-5">
+                <label>
+                  <input
+                    type="radio"
+                    name="restrito"
+                    value="sim"
+                    checked={restrito === "sim"}
+                    onChange={handleRestritoChange}
+                  />
+                  Sim
+                </label>
+
+                <label>
+                  <input
+                    type="radio"
+                    name="restrito"
+                    value="nao"
+                    checked={restrito === "nao"}
+                    onChange={handleRestritoChange}
+                  />
+                  Não
+                </label>
+              </div>
+            </div>
+
+            <button className="bg-amber-600 p-3 rounded-xl cursor-pointer w-[50%] hover:opacity-[85%]" onClick={handleUpload}>
+              Transcrever
+            </button>
           </div>
 
+          <div className="w-[50%] flex pt-[150px] p-4 ">
+            <div className=" bg-white w-[80%]"></div>
+          </div>
         </div>
-        
-        {/* Modal */}
-        {modal && (
+
+      </div>
+
+      {/* Modal */}
+      {modal && (
         <div className="fixed inset-0 z-50 flex items-end justify-end pr-5 pb-5">
-            <div className="bg-gray-600 border-t border-b border-black text-white px-4 py-3 rounded-[10px]" role="alert">
-              <p className="text-sm">Carregando arquivos...</p>
-            </div>
+          <div className="bg-gray-600 border-t border-b border-black text-white px-4 py-3 rounded-[10px]" role="alert">
+            <p className="text-sm">Carregando arquivos...</p>
+          </div>
         </div>
-        )}
-      </>
-    );
+      )}
+    </div>
+  );
 }

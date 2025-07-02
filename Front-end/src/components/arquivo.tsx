@@ -8,6 +8,28 @@ export default function Arquivo({ title }: { title: string }) {
   const [modal, setModal] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const dotsRef = useRef<HTMLButtonElement>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const updateTheme = () => {
+      const storedTheme = localStorage.getItem('theme');
+      console.log("Evento 'themeChanged' capturado. Novo tema:", storedTheme);
+      if (storedTheme !== null) {
+        try {
+          const parsedTheme = JSON.parse(storedTheme);
+          setIsDarkMode(parsedTheme);
+        } catch (error) {
+          console.error("Erro ao fazer parse do tema no localStorage:", error);
+          setIsDarkMode(false);
+        }
+      }
+    };
+
+    updateTheme();
+    window.addEventListener("themeChanged", updateTheme);
+
+    return () => window.removeEventListener("themeChanged", updateTheme);
+  }, []);
 
   const closeMenu = () => setModal(false);
 
@@ -22,7 +44,6 @@ export default function Arquivo({ title }: { title: string }) {
     }
   };
 
-  // ✅ Travar/destravar scroll ao abrir/fechar o menu
   useEffect(() => {
     if (modal) {
       document.body.classList.add("overflow-hidden");
@@ -37,7 +58,7 @@ export default function Arquivo({ title }: { title: string }) {
 
   return (
     <>
-      <div className="bg-[#3D3D3D] flex justify-between w-[220px] rounded p-3 text-[14px] items-center">
+      <div className={isDarkMode ? "bg-[#3D3D3D] flex justify-between w-[220px] rounded p-3 text-[14px] items-center" : "bg-[#bdbdbd] flex justify-between w-[220px] rounded p-3 text-[14px] items-center"}>
         <p className="cursor-pointer">{title}</p>
         <button ref={dotsRef} onClick={openMenu} className="p-1">
           <Image
