@@ -1,4 +1,5 @@
 export enum ROUTES{
+    audioscript = "/audioscript",
     login = "/login",
     home = "/telaInicial",
     hist = "/historico",

@@ -1,7 +1,12 @@
-from flask import Flask, jsonify, request, Response
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import random
+import smtplib
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
+import mysql.connector
 from werkzeug.utils import secure_filename
 from Conversor.main import transform_mp4_to_mp3
 from Database.conection import connect_to_mysql, insert_file_into_mysql, create_private_folder, attachment_file_folder
@@ -11,7 +16,7 @@ from Transcription.main import transcribe_audio
 from datetime import datetime
 import logging
 from routes.login import login_bp
-from typing import Optional
+import logging
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
@@ -19,6 +24,16 @@ USER = os.getenv("USERAWSRDS")
 PASSWORD = os.getenv("PWDAWSRDS")
 UPLOAD_FOLDER = 'mp3-files'
 AWS_BUCKET = 'audioscript-s3-bucket'
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASS = os.getenv("EMAIL_PASS")
+
+db_config = {
+    'host': 'localhost',
+    'port': 3307,
+    'user': 'root',
+    'password': 'root',
+    'database': 'AudioScript'
+}
 
 logging.basicConfig(
     level=logging.INFO,
@@ -91,9 +106,116 @@ def upload_files() -> Optional[Response.json]:
             logging.info(f"Audio file deleted: {filename}")
 
     os.remove(f"{filename_on_db_and_aws}.pdf")
-    logging.info(f"PDF file deleted: {filename_on_db_and_aws}.pdf")
-    return jsonify({"message": f"Arquivo recebido e operacoes feitas com sucesso."})
+    logging.info(f"File deleted: {filename_on_db_and_aws}.pdf")
+    return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restricted, "file_name": user_file_name})
 
+
+@app.route('/api/criar-empresa', methods=['POST'])
+def criar_empresa():
+    data = request.get_json()
+    nome_empresa = data.get('company')
+    email_usuario = data.get('email')
+
+    if not (nome_empresa and email_usuario):
+        return jsonify({"error": "Preencha todos os campos"}), 400
+
+    codigo_empresa = str(random.randint(100000, 999999))
+    codigo_funcionario = random.randint(1000, 9999)
+    nome_admin = f"Adm{nome_empresa.replace(' ', '')}"
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = connect_to_mysql()  # Usa sua função padrão
+        cursor = connection.cursor()
+
+        cursor.execute(
+            "INSERT INTO Empresa (Nome, Codigo) VALUES (%s, %s)",
+            (nome_empresa, codigo_empresa)
+        )
+        empresa_id = cursor.lastrowid
+
+        cursor.execute(
+            "INSERT INTO Employer (CodigoFunc, Nome, Email, Is_admin, Fk_Empresa_Id) "
+            "VALUES (%s, %s, %s, %s, %s)",
+            (codigo_funcionario, nome_admin, email_usuario, True, empresa_id)
+        )
+
+        connection.commit()
+
+        enviar_email_com_dados(
+            nome_empresa, nome_admin, email_usuario, codigo_empresa, codigo_funcionario
+        )
+
+        return jsonify({
+            "message": "Empresa e usuário admin criados com sucesso!",
+            "codigo_empresa": codigo_empresa,
+            "codigo_funcionario": codigo_funcionario,
+            "usuario_admin": nome_admin,
+            "email_admin": email_usuario
+        }), 200
+
+    except mysql.connector.Error as err:
+        print("Erro no banco:", err)
+        return jsonify({"error": str(err)}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection and connection.is_connected():
+            connection.close()
+
+
+
+def enviar_email_com_dados(nome_empresa, nome_admin, email, codigo_empresa, codigo_funcionario):
+    remetente = EMAIL_USER
+    senha = EMAIL_PASS
+
+    mensagem = MIMEMultipart("alternative")
+    mensagem["Subject"] = "Dados de acesso - Plataforma AudioScript"
+    mensagem["From"] = remetente
+    mensagem["To"] = email
+
+    html = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; color: #333;">
+        <h2>Olá {nome_admin},</h2>
+        <p>Seja bem-vindo(a) à plataforma <b>AudioScript</b>.</p>
+
+        <p>A sua empresa <b>{nome_empresa}</b> foi cadastrada com sucesso.</p>
+
+        <h3>🚀 Dados de acesso:</h3>
+        <ul>
+            <li><b>Código da Empresa:</b> {codigo_empresa}</li>
+            <li><b>Código do Usuário:</b> {codigo_funcionario}</li>
+            <li><b>Usuário:</b> {nome_admin}</li>
+        </ul>
+
+        <p>Você poderá acessar a plataforma utilizando esses dados no link abaixo:</p>
+        <p><a href="https://audioscript.com.br" target="_blank" style="color: #FFA500;">Acessar Plataforma</a></p>
+
+        <br>
+        <p style="font-size: 14px; color: #555;">
+        <b>Observação:</b> Este é o seu usuário administrador. Com ele você poderá criar outros usuários, organizar arquivos e gerenciar sua empresa.
+        </p>
+
+        <br>
+        <p>Atenciosamente,</p>
+        <p><b>Equipe AudioScript</b></p>
+    </body>
+    </html>
+    """
+
+    mensagem.attach(MIMEText(html, "html"))
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(remetente, senha)
+            server.sendmail(remetente, email, mensagem.as_string())
+        print("E-mail enviado com sucesso")
+    except Exception as e:
+        print("Erro ao enviar e-mail:", e)
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
