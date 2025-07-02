@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import Capa from "@/assets/bg-login.jpg";
+import Arrow from "@/assets/arrow-white.png";
 import { useState } from "react";
 import TelaInicial from "../telaInicial/page";
 import { ROUTES } from "@/constants/routes";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Home() {
   const [codEmpresa, setCodEmpresa] = useState<string>("");
@@ -57,21 +59,24 @@ export default function Home() {
       setError(true);
     }
 
-    
+
   };
 
   return (
     <>
-    {showModal && (
-      <div className="fixed top-6 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-md shadow-lg z-50 transition-opacity duration-300"></div>
-    )}
-    <div className="flex items-center h-screen w-full">
+      {showModal && (
+        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-md shadow-lg z-50 transition-opacity duration-300"></div>
+      )}
+      <div className="flex items-center h-screen w-full">
         <Image
           className="w-[45%] h-full flex justify-start items-start"
           src={Capa}
           alt="Imagem de fundo"
         />
-        <div className="flex items-center justify-center w-[50%]">
+        <div className="flex w-[50%] flex-col relative">
+          <Link href={ROUTES.audioscript} className="text-[15px]">
+            <Image src={Arrow} alt={"Seta"} className="w-[30px] scale-x-[-1] absolute top-[-320px] left-4 hover:opacity-[80%]"/>
+          </Link>
           <div className="flex flex-col justify-center items-center gap-6">
             <h2 className="text-[#FF8502] font-bold text-[30px] mb-6">Login</h2>
             <input
@@ -97,6 +102,6 @@ export default function Home() {
       </div>
     </>
 
-    
+
   );
 }
