@@ -8,12 +8,12 @@ import add from "@/assets/add.png";
 import { useEffect, useState } from "react";
 
 export default function Colaboradores(){
-
-    const [selectFormat, setSelectFormat] = useState(null);
+    
     const [modal, setModal] = useState(false);
     const [nomeColaborador, setNomeColaborador] = useState("");
     const [codColaborador, setCodColaborador] = useState("");
     const [emailColaborador, setEmailColaborador] = useState("");
+    const idAdm = localStorage.getItem('Id');
     const [error,setError] = useState<boolean>(false)
 
     const closeModal = () => {
@@ -26,29 +26,25 @@ export default function Colaboradores(){
 
     const [todosColaboradores, setTodosColaboradores] = useState<Linha[]>([]);
     const [loading, setLoading] = useState(true);
-    // const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:5000/user"); // Sua rota para todos os funcionários
-                
+                if (!idAdm) return;
+
+                const response = await fetch(`http://localhost:5000/users/${idAdm}`);
                 if (!response.ok) throw new Error("Falha ao buscar dados.");
+
                 const data = await response.json();
                 setTodosColaboradores(data);
-
             } catch (err) {
-                // setError("Erro ao carregar colaboradores.");
+                console.error("Erro ao buscar colaboradores", err);
             } finally {
                 setLoading(false);
             }
         };
         fetchData();
-    }, []);
-
-    // if (loading) return <div>Carregando tabela...</div>;
-    // if (error) return <div style={{ color: 'red' }}>{error}</div>;
-    // if (todosColaboradores.length === 0) return <div>Nenhum colaborador para exibir.</div>;
+    }, [idAdm]);
 
 
     const Cadastrar = async () => {
@@ -61,7 +57,8 @@ export default function Colaboradores(){
                 body: JSON.stringify({
                     nomeColaborador: nomeColaborador,
                     codColaborador: codColaborador,
-                    emailColaborador: emailColaborador
+                    emailColaborador: emailColaborador,
+                    idAdm: idAdm,
                 }),
             });
 
@@ -79,7 +76,6 @@ export default function Colaboradores(){
                 setNomeColaborador("")
                 setEmailColaborador("")
             }
-            console.log(result)
         }catch{
 
         }
@@ -126,8 +122,9 @@ export default function Colaboradores(){
 
                         {todosColaboradores.map((colaborador) => (
                             <Colaborador 
-                                Id={colaborador.Id}
-                                Name={colaborador.Name}
+                                key={colaborador.Id}
+                                CodigoFunc={colaborador.CodigoFunc}
+                                Nome={colaborador.Nome}
                                 Email={colaborador.Email}
                             />
                         ))}
@@ -155,7 +152,7 @@ export default function Colaboradores(){
                                 onChange={(e) => setNomeColaborador(e?.target.value)}
                             />
                             <input
-                                type="email"
+                                type="Email"
                                 placeholder="Email"
                                 className="border-1 rounded-[5px] p-2 mt-2 text-[13px]"
                                 value={emailColaborador}

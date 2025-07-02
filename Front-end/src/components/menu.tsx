@@ -11,29 +11,28 @@ export const Menu = () => {
 const [userName, setUserName] = useState('Carregando...');
 
     useEffect(() => {
-    const userId = localStorage.getItem('Id');
-    console.log()
+        const userId = localStorage.getItem('Id');
 
-    if (!userId) return;
+        if (!userId) return;
 
-    fetch(`http://localhost:5000/user/${userId}`, {
-        method: "GET",
-        headers: {
-        "Content-Type": "application/json",
-        },
-    })
-        .then((res) => {
-            if (!res.ok) throw new Error('Erro ao buscar funcionário');
-            return res.json();
+        fetch(`http://localhost:5000/user/${userId}`, {
+            method: "GET",
+            headers: {
+            "Content-Type": "application/json",
+            },
         })
-        .then((data) => {
-            console.log("Nome do funcionário:", data.nome);
-            setUserName(data.nome); // supondo que você tenha um useState para exibir
-        })
-        .catch((err) => {
-            console.error(err);
-            setUserName('Erro ao carregar nome');
-        });
+            .then((res) => {
+                if (!res.ok) throw new Error('Erro ao buscar funcionário');
+                return res.json();
+            })
+            .then((data) => {
+                console.log("Nome do funcionário:", data.nome);
+                setUserName(data.nome); // supondo que você tenha um useState para exibir
+            })
+            .catch((err) => {
+                console.error(err);
+                setUserName('Erro ao carregar nome');
+            });
     }, []);
 
     return (
