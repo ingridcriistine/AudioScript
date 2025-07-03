@@ -6,7 +6,7 @@ import moviepy as mp
 
 
 PATH=r"/home/matiaszuniga/Repositories/audioscript-env/AudioScript/Back-end/mp3-files/WhatsApp Video 2025-07-03 at 14.32.36.mp4"
-OUTPUT_FOLDER = "mp3-converted"
+OUTPUT_FOLDER = "mp3-files"
 
 
 def get_filename_with_filepath(file_path):

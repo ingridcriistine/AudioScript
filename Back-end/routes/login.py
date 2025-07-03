@@ -27,7 +27,10 @@ def autenticar():
 
         cursor.execute(
             """
-            SELECT Employer.CodigoFunc, Empresa.Codigo, Employer.Id 
+            SELECT 
+                Employer.CodigoFunc, 
+                Empresa.Codigo, 
+                Employer.Id 
             FROM Employer 
             JOIN Empresa ON Employer.Fk_Empresa_Id = Empresa.Id 
             WHERE Employer.CodigoFunc = %s AND Empresa.Codigo = %s;
