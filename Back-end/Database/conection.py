@@ -23,10 +23,10 @@ logging.basicConfig(
 def connect_to_mysql():
     try:
         cnx = mysql.connector.connect(
-            user='root',
+            user='matias',
             password='root',
             host="127.0.0.1",
-            port=3307,
+            port=3306,
             database='audioscript'
         )
         
@@ -42,12 +42,12 @@ def connect_to_mysql():
     return cnx
 
 def insert_file_into_mysql(
-        cnx: mysql.connector.connection,
         nome: str,
         data_transcricao: str,
         employer_id: int,
         empresa_id: int
     ):
+    cnx = connect_to_mysql()
     cursor = cnx.cursor()
     query_sql = """USE audioscript"""
     cursor.execute(query_sql)
@@ -57,19 +57,22 @@ def insert_file_into_mysql(
     """
     cursor.execute(query_sql, (nome, data_transcricao, 1, 1))
     cnx.commit()
+    cnx.close()
     logging.info(f"File '{nome}' succesfully inserted into table Arquivo")
 
-def attach_file_on_folder_mysql(cnx: mysql.connector.connection, filename: str):
+
+def attach_file_on_folder_mysql(filename: str, foldername: str):
+    cnx = connect_to_mysql()
     cursor = cnx.cursor()
-    query_sql = "SELECT id FROM Pasta WHERE Nome = 'pasta_privada'"
-    cursor.execute(query_sql)
+    query_sql = "SELECT id FROM Pasta WHERE Nome = %s"
+    cursor.execute(query_sql, (foldername,))
     result = cursor.fetchone()
     if result == None:
-        query_sql = "INSERT INTO Pasta (Nome, Is_private) VALUES ('pasta_privada', 1)"
-        cursor.execute(query_sql)
+        query_sql = "INSERT INTO Pasta (Nome, Is_private) VALUES (%s, 1)"
+        cursor.execute(query_sql, (foldername,))
         cnx.commit()
-        query_sql = "SELECT id FROM Pasta WHERE Nome = 'pasta_privada'"
-        cursor.execute(query_sql)
+        query_sql = "SELECT id FROM Pasta WHERE Nome = %s"
+        cursor.execute(query_sql, (foldername,))
         pasta_id = cursor.fetchone()[0]
     else:
         pasta_id = result[0]
@@ -80,6 +83,8 @@ def attach_file_on_folder_mysql(cnx: mysql.connector.connection, filename: str):
     query_sql = """UPDATE Arquivo SET Fk_Pasta_Id = %s WHERE id = %s"""
     cursor.execute(query_sql, (pasta_id, file_id))
     cnx.commit()
+    cnx.close()
+
 
 if __name__=="__main__":
     cnx = connect_to_mysql()
