@@ -1,6 +1,6 @@
-# routes/login.py
 from flask import Blueprint, request, jsonify
 from Database.conection import connect_to_mysql
+
 login_bp = Blueprint('login', __name__, url_prefix='/login')
 
 @login_bp.route('/', methods=['GET'])
@@ -20,25 +20,25 @@ def autenticar():
 
     try:
         conn = connect_to_mysql()
+        if conn is None:
+            return jsonify({"erro": "Erro na conexão com o banco"}), 500
+
         cursor = conn.cursor(dictionary=True)
 
         cursor.execute(
             """
-                SELECT 
-                    Employer.Id AS employerId, 
-                    Empresa.Id AS empresaId
-                FROM 
-                    Employer 
-                JOIN 
-                    Empresa ON Employer.Fk_Empresa_Id = Empresa.Id 
-                WHERE 
-                    Employer.CodigoFunc = %s AND Empresa.Codigo = %s;
+            SELECT Employer.CodigoFunc, Empresa.Codigo, Employer.Id 
+            FROM Employer 
+            JOIN Empresa ON Employer.Fk_Empresa_Id = Empresa.Id 
+            WHERE Employer.CodigoFunc = %s AND Empresa.Codigo = %s;
             """,
             (codigoFunc, codigoEmpresa)
         )
 
         resultado = cursor.fetchone()
         if resultado:
+            print("Resultado final a ser retornado:", resultado)
+
             return jsonify({"mensagem": "Login bem-sucedido", "usuario": resultado})
         else:
             return jsonify({"erro": "Usuário ou senha inválidos"}), 401

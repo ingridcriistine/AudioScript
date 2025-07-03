@@ -1,19 +1,19 @@
 "use client"
 import { Menu } from "@/components/menu";
 import { Submenu } from "@/components/submenu";
-import { Colaborador } from "@/components/tabelaColaboradores";
+import { Colaborador, Linha } from "@/components/tabelaColaboradores";
 import Image from "next/image";
 import search from "@/assets/search.png"
 import add from "@/assets/add.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Colaboradores(){
-
-    const [selectFormat, setSelectFormat] = useState(null);
+    
     const [modal, setModal] = useState(false);
     const [nomeColaborador, setNomeColaborador] = useState("");
     const [codColaborador, setCodColaborador] = useState("");
     const [emailColaborador, setEmailColaborador] = useState("");
+    const idAdm = localStorage.getItem('Id');
     const [error,setError] = useState<boolean>(false)
 
     const closeModal = () => {
@@ -24,9 +24,32 @@ export default function Colaboradores(){
         setModal(true);
     }
 
+    const [todosColaboradores, setTodosColaboradores] = useState<Linha[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if (!idAdm) return;
+
+                const response = await fetch(`http://localhost:5000/users/${idAdm}`);
+                if (!response.ok) throw new Error("Falha ao buscar dados.");
+
+                const data = await response.json();
+                setTodosColaboradores(data);
+            } catch (err) {
+                console.error("Erro ao buscar colaboradores", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [idAdm]);
+
+
     const Cadastrar = async () => {
         try{
-            const response =  await fetch('http://localhost:8080/cadastrarFunc',{
+            const response =  await fetch('http://localhost:5000/cadastraFunc',{
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -34,7 +57,8 @@ export default function Colaboradores(){
                 body: JSON.stringify({
                     nomeColaborador: nomeColaborador,
                     codColaborador: codColaborador,
-                    emailColaborador: emailColaborador
+                    emailColaborador: emailColaborador,
+                    idAdm: idAdm,
                 }),
             });
 
@@ -47,13 +71,11 @@ export default function Colaboradores(){
                 setEmailColaborador("")
                 alert(result.message);
             } else {
-                // sessionStorage.setItem("Token", "Bearer " + result.token)
                 setError(false);
                 setCodColaborador("")
                 setNomeColaborador("")
                 setEmailColaborador("")
             }
-            console.log(result)
         }catch{
 
         }
@@ -98,7 +120,14 @@ export default function Colaboradores(){
                             <span className="flex bg-[#272725] rounded-sm p-2 w-[40%] h-8 items-center">Email</span>
                         </div>
 
-                        <Colaborador id={"a"} name={"a"} email={"a"}></Colaborador>
+                        {todosColaboradores.map((colaborador) => (
+                            <Colaborador 
+                                key={colaborador.Id}
+                                CodigoFunc={colaborador.CodigoFunc}
+                                Nome={colaborador.Nome}
+                                Email={colaborador.Email}
+                            />
+                        ))}
                     </div>
                 </div>
 
@@ -123,7 +152,7 @@ export default function Colaboradores(){
                                 onChange={(e) => setNomeColaborador(e?.target.value)}
                             />
                             <input
-                                type="email"
+                                type="Email"
                                 placeholder="Email"
                                 className="border-1 rounded-[5px] p-2 mt-2 text-[13px]"
                                 value={emailColaborador}

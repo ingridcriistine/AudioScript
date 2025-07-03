@@ -7,14 +7,36 @@ import iconHome from "@/assets/home.png";
 import iconExit from "@/assets/exit.png";
 import iconSecret from "@/assets/lock.png";
 import iconHistoryc from "@/assets/history.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export const Submenu = () => {
 
     const [modal, setModal] = useState(false);
     const [senha, setSenhaArquivo] = useState<string>();
-    const router = useRouter()
+    const router = useRouter();
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    useEffect(() => {
+        const updateTheme = () => {
+            const storedTheme = localStorage.getItem('theme');
+            console.log("Evento 'themeChanged' capturado. Novo tema:", storedTheme);
+            if (storedTheme !== null) {
+                try {
+                    const parsedTheme = JSON.parse(storedTheme);
+                    setIsDarkMode(parsedTheme);
+                } catch (error) {
+                    console.error("Erro ao fazer parse do tema no localStorage:", error);
+                    setIsDarkMode(false);
+                }
+            }
+        };
+
+        updateTheme();
+        window.addEventListener("themeChanged", updateTheme);
+
+        return () => window.removeEventListener("themeChanged", updateTheme);
+    }, []);
 
     const handleConfirm = () => {
         if (senha === "senha") {
@@ -24,7 +46,7 @@ export const Submenu = () => {
             alert("Senha incorreta!");
         }
     };
-    
+
     const closeModal = () => {
         handleConfirm();
         setModal(false);
@@ -67,38 +89,38 @@ export const Submenu = () => {
             </div>
 
             {/* Modal */}
-           {modal && (
+            {modal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-                    <div className="bg-zinc-800 p-8 rounded-lg shadow-lg flex items-center justify-center flex-col">
-                    <div className="p-2 flex flex-col w-96">
-                        <h2 className="text-xl font-semibold mb-4">Insira a senha de acesso</h2>
-                        <form className="flex flex-col">
-                            <input
-                                type="password"
-                                placeholder="Senha"
-                                className="border-1 rounded-[5px] p-2 mt-2 text-[13px]"
-                                value={senha}
-                                onChange={(e) => setSenhaArquivo(e.target.value)}
-                            />
-                        </form>
-                        <div className="flex justify-between mt-10">
-                        <button
-                            onClick={closeModal}
-                            className="flex justify-center items-center h-8 text-[15px] bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 cursor-pointer"
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            onClick={closeModal}
-                            className="flex justify-center items-center h-8 text-[15px] bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 cursor-pointer"
-                        >
-                            Confirmar
-                        </button>
+                    <div className={isDarkMode ? "bg-zinc-800 p-8 rounded-lg shadow-lg flex items-center justify-center flex-col" : "bg-white p-8 rounded-lg shadow-lg flex items-center justify-center flex-col"}>
+                        <div className="p-2 flex flex-col w-96">
+                            <h2 className="text-xl font-semibold mb-4">Insira a senha de acesso</h2>
+                            <form className="flex flex-col">
+                                <input
+                                    type="password"
+                                    placeholder="Senha"
+                                    className="border-1 rounded-[5px] p-2 mt-2 text-[13px]"
+                                    value={senha}
+                                    onChange={(e) => setSenhaArquivo(e.target.value)}
+                                />
+                            </form>
+                            <div className="flex justify-between mt-10">
+                                <button
+                                    onClick={closeModal}
+                                    className="flex justify-center items-center h-8 text-[15px] bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 cursor-pointer"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={closeModal}
+                                    className="flex justify-center items-center h-8 text-[15px] bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 cursor-pointer"
+                                >
+                                    Confirmar
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    </div>
                 </div>
-                )}
+            )}
         </>
     );
 };
