@@ -124,15 +124,15 @@ export default function TelaInicial() {
   }
 
   return (
-    <div className={isDarkMode ? "bg-[#181717] z-0 text-white" : "bg-white z-0 text-black"}>
+    <div className={isDarkMode ? "bg-[#181717] z-0" : "bg-white z-0"}>
       <Menu />
       <div className="flex">
         <Submenu />
         <div className="flex w-full">
-          <div className="flex flex-col w-[50%] p-8 gap-8 text-white pt-[150px] pl-[80px]">
+          <div className={isDarkMode ? "flex flex-col w-[50%] p-8 gap-8 text-white pt-[150px] pl-[80px]" : "flex flex-col w-[50%] p-8 gap-8 text-black pt-[150px] pl-[80px]"}>
             <div className="flex flex-col w-[50%] ">
               <button onClick={handleButtonClick}
-                className="bg-[#272727] rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-[#333333]"
+                className="bg-[#272727] text-white rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-[#333333]"
               >
                 Escolher arquivos
               </button>
@@ -162,7 +162,7 @@ export default function TelaInicial() {
               <label htmlFor="">Nome do arquivo transcrito</label>
               <input
                 type="text"
-                className="flex text-white border rounded-sm p-1 border-amber-50 w-[50%]"
+                className={isDarkMode ? "flex text-white border rounded-sm p-1 border-amber-50 w-[50%]" : "flex text-white border rounded-sm p-1 border-black w-[50%]"}
                 id="customFileName"
               />
             </div>
@@ -195,13 +195,13 @@ export default function TelaInicial() {
               </div>
             </div>
 
-            <button className="bg-amber-600 p-3 rounded-xl cursor-pointer w-[50%] hover:opacity-[85%]" onClick={handleUpload}>
+            <button className="bg-amber-600 text-white p-3 rounded-xl cursor-pointer w-[50%] hover:opacity-[85%]" onClick={handleUpload}>
               Transcrever
             </button>
           </div>
 
           <div className="w-[50%] flex pt-[150px] p-4 ">
-            <div className=" bg-white w-[80%]"></div>
+            <div className={isDarkMode ? "bg-white w-[80%]" : "bg-white w-[80%] border-2 border-black" }></div>
           </div>
         </div>
 

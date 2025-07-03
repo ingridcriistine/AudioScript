@@ -15,6 +15,10 @@ import { Calendar } from 'primereact/calendar';
 import './custom.css';
 import Modal from '@/components/modal';
 
+interface IData {
+    nome : string;
+}
+
 export default function Historico() {
 
     const [selectFormat, setSelectFormat] = useState(null);
@@ -23,6 +27,10 @@ export default function Historico() {
     const [nomePasta, setNomePasta] = useState("");
     const [error, setError] = useState<boolean>(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [arquivos, setArquivos] = useState<IData[]>([]);
+    const [pastas, setPastas] = useState<IData[]>([]);
+    const empresaId = localStorage.getItem("idEmpresa");
+    const userId = localStorage.getItem("idUsuario");
 
     useEffect(() => {
         const updateTheme = () => {
@@ -86,6 +94,24 @@ export default function Historico() {
 
         }
     }
+
+    useEffect(() => {
+        const loadArquivos = async () => {
+            const res = await fetch(`http://localhost:8080/api/getArquivos?empresaId=${empresaId}&userId=${userId}`);
+            const data = await res.json();
+            setArquivos(data.results);
+        }
+
+        const loadPastas = async () => {
+            const res = await fetch(`http://localhost:8080/api/getPastas?empresaId=${empresaId}&userId=${userId}`);
+            const data = await res.json();
+            setPastas(data.results);
+        }
+
+        loadArquivos();
+        loadPastas();
+    }, [])
+
     return (
         <div className={isDarkMode ? "bg-[#181717] z-0 text-white" : "bg-white z-0 text-black"}>
             <Menu />
@@ -97,7 +123,13 @@ export default function Historico() {
                         <h3 className="text-[18px]">Pastas</h3>
                         <Image className="w-[20px] h-[20px] cursor-pointer" src={isDarkMode ? Add : AddBlack} alt={"Ícone de adicionar"} />
                     </button>
-                    <Pasta title="Reuniões" />
+
+                    {pastas.map((item) => {
+                        return (
+                            <Pasta title={item.nome}/>
+                        )
+                    })}
+
                     <h3 className="text-[18px] mt-8 mb-8">Arquivos</h3>
                     <div className="flex gap-5 mb-8">
                         <Dropdown value={selectFormat} onChange={(e) => setSelectFormat(e.value)} options={formats} optionLabel="name" placeholder="Formato" className={isDarkMode ? "p-1 pr-3 pl-3 border-2 border-white text-white rounded w-[200px] text-[14px]" : "p-1 pr-3 pl-3 border-2 border-black text-black rounded w-[200px] text-[14px]"} panelClassName="custom-dropdown-panel" />
@@ -112,13 +144,11 @@ export default function Historico() {
                         </div>
                     </div>
                     <div className="flex flex-wrap gap-5">
-                        <Arquivo title="Spring lab" />
-                        <Arquivo title="Pitch" />
-                        <Arquivo title="Pitch" />
-                        <Arquivo title="Pitch" />
-                        <Arquivo title="Pitch" />
-                        <Arquivo title="Pitch" />
-                        <Arquivo title="Requisitos de Sistemas" />
+                        {arquivos.map((item) => {
+                            return (
+                                <Arquivo title={item.nome}/>
+                            )
+                        })}
                     </div>
                 </div>
 

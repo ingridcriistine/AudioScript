@@ -6,7 +6,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
-import mysql.connector
+import mysql.connector  
 from werkzeug.utils import secure_filename
 from Conversor.main import transform_mp4_to_mp3
 from Database.conection import connect_to_mysql, insert_file_into_mysql, attach_file_on_folder_mysql
@@ -34,7 +34,7 @@ db_config = {
     'port': 3307,
     'user': 'root',
     'password': 'root',
-    'database': 'AudioScript'
+    'database': 'audioscript'
 }
 
 logging.basicConfig(
@@ -223,6 +223,74 @@ def enviar_email_com_dados(nome_empresa, nome_admin, email, codigo_empresa, codi
         print("E-mail enviado com sucesso")
     except Exception as e:
         print("Erro ao enviar e-mail:", e)
+
+
+@app.route('/api/getArquivos', methods=['GET'])
+def get_arquivos():
+    empresa_id = request.args.get("empresaId")
+    user_id = request.args.get("userId")
+
+    if not empresa_id or not user_id:
+        return jsonify({"error": "Parâmetros 'empresaId' e 'userId' são obrigatórios"}), 400
+
+    try:
+        connection = connect_to_mysql()
+        cursor = connection.cursor(dictionary=True)
+
+        query = """
+            SELECT id, Nome, Data
+            FROM Arquivo
+            WHERE Fk_Empresa_Id = %s AND Fk_Employer_Id = %s
+            ORDER BY Data DESC
+        """
+        cursor.execute(query, (empresa_id, user_id))
+        arquivos = cursor.fetchall()
+
+        return jsonify(arquivos), 200
+
+    except mysql.connector.Error as err:
+        print("Erro ao buscar arquivos:", err)
+        return jsonify({"error": "Erro ao buscar arquivos no banco"}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+
+@app.route('/api/getPastas', methods=['GET'])
+def get_pastas():
+    empresa_id = request.args.get("empresaId")
+    user_id = request.args.get("userId")
+
+    if not empresa_id or not user_id:
+        return jsonify({"error": "Parâmetros 'empresaId' e 'userId' são obrigatórios"}), 400
+
+    try:
+        connection = connect_to_mysql()
+        cursor = connection.cursor(dictionary=True)
+
+        query = """
+            SELECT id, nome
+            FROM Pasta
+            WHERE Fk_Empresa_Id = %s AND Fk_Employer_Id = %s
+        """
+        cursor.execute(query, (empresa_id, user_id))
+        pastas = cursor.fetchall()
+
+        return jsonify({"results": pastas}), 200
+
+    except mysql.connector.Error as err:
+        print("Erro ao buscar pastas:", err)
+        return jsonify({"error": "Erro ao buscar pastas"}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
