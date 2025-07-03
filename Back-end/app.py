@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import mysql.connector
 from werkzeug.utils import secure_filename
 from Conversor.main import transform_mp4_to_mp3
-from Database.conection import connect_to_mysql, insert_file_into_mysql, create_private_folder, attachment_file_folder
+from Database.conection import connect_to_mysql, insert_file_into_mysql, attach_file_on_folder_mysql
 from CreatePdf.main import create_pdf
 from AwsS3Operations.main import upload_file_to_s3, download_file_from_s3, delete_file_from_s3
 from Transcription.main import transcribe_audio
@@ -57,7 +57,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 @app.route('/api/uploadfiles', methods=['POST'])
-def upload_files() -> Optional[Response.json]:
+def upload_files():
     data = request.form
     restricted = data.get('restrito') 
     user_file_name = data.get('user-file-name')
