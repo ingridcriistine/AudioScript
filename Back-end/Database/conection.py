@@ -21,11 +21,11 @@ logging.basicConfig(
 def connect_to_mysql() -> Optional[CMySQLConnection]:
     try:
         cnx = mysql.connector.connect(
-            host="localhost",
-            port=3306,
-            user="root",
-            password="root",
-            database="AudioScript"
+            user='root',
+            password='root',
+            host="127.0.0.1",
+            port=3307,
+            database='audioscript'
         )
         if cnx.is_connected():
             print("✅ Conectado ao banco com sucesso!")

@@ -6,38 +6,34 @@ import iconExit from "@/assets/exit.png";
 import iconSecret from "@/assets/lock.png";
 import iconHistoryc from "@/assets/history.png";
 import { useEffect, useState } from "react";
-import MoonDark from "@/assets/moon-dark.png"
-import MoonWhite from "@/assets/moon-white.png"
-import SunWhite from "@/assets/sun-white.png"
-import SunDark from "@/assets/sun-black.png"
-import Logo from "@/assets/Logo.png"
 
 export const Menu = () => {
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        if (typeof window !== "undefined") {
-            try {
-                const storedTheme = localStorage.getItem("theme");
-                return storedTheme !== null ? JSON.parse(storedTheme) : true;
-            } catch (err) {
-                console.warn("Erro ao carregar tema:", err);
-                return true;
-            }
-        }
-        return true;
-    });
+const [userName, setUserName] = useState('Carregando...');
 
-
-    const toggleTheme = () => {
-        setIsDarkMode((prev: any) => {
-            const updated = !prev;
-            localStorage.setItem("theme", JSON.stringify(updated));
-            window.dispatchEvent(new Event("themeChanged"));       
-            return updated;
-        });
-    };
     useEffect(() => {
-        localStorage.setItem("theme", JSON.stringify(isDarkMode));
-    }, [isDarkMode]);
+        const userId = localStorage.getItem('Id');
+
+        if (!userId) return;
+
+        fetch(`http://localhost:5000/user/${userId}`, {
+            method: "GET",
+            headers: {
+            "Content-Type": "application/json",
+            },
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error('Erro ao buscar funcionário');
+                return res.json();
+            })
+            .then((data) => {
+                console.log("Nome do funcionário:", data.nome);
+                setUserName(data.nome); // supondo que você tenha um useState para exibir
+            })
+            .catch((err) => {
+                console.error(err);
+                setUserName('Erro ao carregar nome');
+            });
+    }, []);
 
     return (
         <>
