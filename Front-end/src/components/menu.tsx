@@ -6,6 +6,9 @@ import iconExit from "@/assets/exit.png";
 import iconSecret from "@/assets/lock.png";
 import iconHistoryc from "@/assets/history.png";
 import { useEffect, useState } from "react";
+import SunWhite from  "@/assets/sun-white.png";
+import MoonWhite from  "@/assets/moon-white.png";
+import Logo from "@/assets/Logo.png";
 
 export const Menu = () => {
 const [userName, setUserName] = useState('Carregando...');
@@ -34,6 +37,32 @@ const [userName, setUserName] = useState('Carregando...');
                 setUserName('Erro ao carregar nome');
             });
     }, []);
+
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        if (typeof window !== "undefined") {
+            try {
+                const storedTheme = localStorage.getItem("theme");
+                return storedTheme !== null ? JSON.parse(storedTheme) : true;
+            } catch (err) {
+                console.warn("Erro ao carregar tema:", err);
+                return true;
+            }
+        }
+        return true;
+    });
+
+
+    const toggleTheme = () => {
+        setIsDarkMode((prev: any) => {
+            const updated = !prev;
+            localStorage.setItem("theme", JSON.stringify(updated));
+            window.dispatchEvent(new Event("themeChanged"));       
+            return updated;
+        });
+    };
+    useEffect(() => {
+        localStorage.setItem("theme", JSON.stringify(isDarkMode));
+    }, [isDarkMode]);
 
     return (
         <>
