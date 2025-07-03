@@ -34,7 +34,7 @@ db_config = {
     'port': 3307,
     'user': 'root',
     'password': 'root',
-    'database': 'AudioScript'
+    'database': 'audioscript'
 }
 
 logging.basicConfig(
