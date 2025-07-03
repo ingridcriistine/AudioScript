@@ -1,11 +1,12 @@
-from errno import errorcode
-from dotenv import load_dotenv
-import os 
-import mysql.connector
-from mysql.connector import CMySQLConnection
-from mysql.connector import errorcode
 import logging
+import os 
 from typing import Optional
+
+from dotenv import load_dotenv
+from errno import errorcode
+import mysql.connector
+from mysql.connector import errorcode
+from mysql.connector import CMySQLConnection
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
