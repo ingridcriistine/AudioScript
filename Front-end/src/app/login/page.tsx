@@ -20,6 +20,7 @@ export default function Home() {
   const router = useRouter();
 
   const Logar = async () => {
+
     try {
       const response = await fetch("http://localhost:5000/login/auth", {
         method: "POST",
@@ -43,8 +44,12 @@ export default function Home() {
         return;
       }
 
-      localStorage.setItem("idUsuario", result.usuario.employerId);
-      localStorage.setItem("idEmpresa", result.usuario.empresaId);
+      localStorage.setItem("Codigo", result.usuario.Codigo);
+      localStorage.setItem("CodigoFunc", result.usuario.CodigoFunc);
+      localStorage.setItem("Id", result.usuario.Id);
+
+
+      console.log(result.usuario.id)
 
       alert(result.mensagem || "Login realizado com sucesso");
       console.log("Usuário autenticado:", result.usuario);

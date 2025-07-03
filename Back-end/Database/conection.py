@@ -2,10 +2,9 @@ from errno import errorcode
 from dotenv import load_dotenv
 import os 
 import mysql.connector
-from mysql.connector import Error
+from mysql.connector import errorcode
 import mysql.connector.cursor
 import logging
-from typing import Optional
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
@@ -18,99 +17,66 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S' 
 )
 
-def connect_to_mysql() -> Optional[CMySQLConnection]:
+def connect_to_mysql():
     try:
         cnx = mysql.connector.connect(
-            host="localhost",
-            port=3306,
-            user="root",
-            password="root",
-            database="AudioScript"
+            user='root',
+            password='root',
+            host="127.0.0.1",
+            port=3307,
+            database='audioscript'
         )
-        if cnx.is_connected():
-            print("✅ Conectado ao banco com sucesso!")
-            return cnx
+        
+    except mysql.connector.Error as e:
+        if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            logging.error("Something is wrong with your user name or password")
+        elif e.errno == errorcode.ER_BAD_DB_ERROR:
+            logging.error("Database does not exist")
         else:
-            print("❌ Falha na conexão com o banco.")
-            return None
-
-    except Error as err:
-        print(f"❌ Erro ao conectar ao banco: {err}")
-        return None
+            logging.error(e)
+    if cnx.connection_id != None:
+        logging.info("Succesfully connected into mysql.")
+    return cnx
 
 def insert_file_into_mysql(
+        cnx: mysql.connector.connection,
         nome: str,
         data_transcricao: str,
         employer_id: int,
         empresa_id: int
-    ) -> bool:
+    ):
+    cursor = cnx.cursor()
+    query_sql = """USE audioscript"""
+    cursor.execute(query_sql)
+    query_sql = """
+    INSERT INTO Arquivo (nome, DataTranscricao, Fk_Employer_id, Fk_Empresa_id)
+    VALUES (%s, %s, %s, %s)
+    """
+    cursor.execute(query_sql, (nome, data_transcricao, 1, 1))
+    cnx.commit()
+    logging.info(f"File '{nome}' succesfully inserted into table Arquivo")
 
-    try:
-        cnx = connect_to_mysql()
-        if cnx.connection_id is None:
-            raise ConnectionError('Could not connect to MySQL')
-        
-        with cnx.cursor() as cursor:
-            cursor.execute("USE audioscript")
-            query_sql = """
-                INSERT INTO Arquivo (nome, DataTranscricao, Fk_Employer_id, Fk_Empresa_id)
-                VALUES (%s, %s, %s, %s)
-            """
-            cursor.execute(query_sql, (nome, data_transcricao, employer_id, empresa_id))
-            cnx.commit()
-        cnx.close()
-        return True
-    except Exception as e:
-        cnx.close()
-        raise e
+def attach_file_on_folder_mysql(cnx: mysql.connector.connection, filename: str):
+    cursor = cnx.cursor()
+    query_sql = "SELECT id FROM Pasta WHERE Nome = 'pasta_privada'"
+    cursor.execute(query_sql)
+    result = cursor.fetchone()
+    if result == None:
+        query_sql = "INSERT INTO Pasta (Nome, Is_private) VALUES ('pasta_privada', 1)"
+        cursor.execute(query_sql)
+        cnx.commit()
+        query_sql = "SELECT id FROM Pasta WHERE Nome = 'pasta_privada'"
+        cursor.execute(query_sql)
+        pasta_id = cursor.fetchone()[0]
+    else:
+        pasta_id = result[0]
 
-def create_private_folder() -> bool:
-    try:
-        cnx = connect_to_mysql()
-        if cnx.connection_id is None:
-            raise ConnectionError('Could not connect to MySQL')
-        with cnx.cursor() as cursor:
-            query_sql = "SELECT id FROM Pasta WHERE Nome = 'pasta_privada'"
-            cursor.execute(query_sql)
-            result = cursor.fetchone()
-            if result is None:
-                query_sql = "INSERT INTO Pasta (Nome, Is_private) VALUES ('pasta_privada', 1)"
-                cursor.execute(query_sql)
-                cnx.commit()
-        cnx.close()
-        return True
-    except Exception as e:
-        cnx.close()
-        raise e
-    
-def attachment_file_folder(filename: str, foldername: str) -> bool:
-    try:
-        cnx = connect_to_mysql()
-        if cnx.connection_id is None:
-            raise ConnectionError('Could not connect to MySQL')
-        
-        with cnx.cursor() as cursor:
-            cursor.execute("SELECT id FROM Pasta WHERE Nome = %s", (foldername,))
-            folder_row = cursor.fetchone()
-            if folder_row is None:
-                raise ValueError(f'Folder {foldername} not found')
-            folder_id = folder_row[0]
-
-            cursor.execute("SELECT id FROM Arquivo WHERE Nome = %s", (filename,))
-            file_row = cursor.fetchone()
-            if file_row is None:
-                raise ValueError(f'File {filename} not found')
-            file_id = file_row[0]
-
-            query_sql = """UPDATE Arquivo SET Fk_Pasta_Id = %s WHERE id = %s"""
-            cursor.execute(query_sql, (folder_id, file_id))
-            cnx.commit()
-        cnx.close()
-        return True
-    except Exception as e:
-        cnx.close()
-        raise e
-
+    query_sql = """SELECT id FROM Arquivo WHERE Nome = %s"""
+    cursor.execute(query_sql, (filename,))
+    file_id = cursor.fetchone()[0]
+    query_sql = """UPDATE Arquivo SET Fk_Pasta_Id = %s WHERE id = %s"""
+    cursor.execute(query_sql, (pasta_id, file_id))
+    cnx.commit()
 
 if __name__=="__main__":
     cnx = connect_to_mysql()

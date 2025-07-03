@@ -27,25 +27,19 @@ def autenticar():
 
         cursor.execute(
             """
-                SELECT 
-                    Employer.Id AS employerId, 
-                    Empresa.Id AS empresaId
-                FROM 
-                    Employer 
-                JOIN 
-                    Empresa ON Employer.Fk_Empresa_Id = Empresa.Id 
-                WHERE 
-                    Employer.CodigoFunc = %s AND Empresa.Codigo = %s;
+            SELECT Employer.CodigoFunc, Empresa.Codigo, Employer.Id 
+            FROM Employer 
+            JOIN Empresa ON Employer.Fk_Empresa_Id = Empresa.Id 
+            WHERE Employer.CodigoFunc = %s AND Empresa.Codigo = %s;
             """,
             (codigoFunc, codigoEmpresa)
         )
 
         resultado = cursor.fetchone()
         if resultado:
-            return jsonify({
-                "mensagem": "Login bem-sucedido",
-                "usuario": resultado
-            }), 200
+            print("Resultado final a ser retornado:", resultado)
+
+            return jsonify({"mensagem": "Login bem-sucedido", "usuario": resultado})
         else:
             return jsonify({"erro": "Usuário ou senha inválidos"}), 401
 
