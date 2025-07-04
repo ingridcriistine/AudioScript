@@ -181,6 +181,15 @@ export default function Audioscript() {
                             onChange={(e) => setEmail(e.target.value)}
                             required
                         />
+
+                        <div className="mt-2 flex flex-row items-center gap-2 text-[15px]">
+                            <input
+                                type="checkbox"
+                                className={isDarkMode ? "bg-[#272727] p-1 pl-4 mt-2" : "bg-white p-1 pl-4 mt-2 border-1 border-gray-950"}
+                                required
+                            />
+                            <label className="mt-4">Li e concordo com os <span className="cursor-pointer font-bold underline">termos de uso.</span></label>
+                        </div>
                     </div>
 
                     <button

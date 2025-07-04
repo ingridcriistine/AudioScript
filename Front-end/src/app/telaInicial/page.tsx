@@ -132,7 +132,7 @@ export default function TelaInicial() {
           <div className={isDarkMode ? "flex flex-col w-[50%] p-8 gap-8 text-white pt-[150px] pl-[80px]" : "flex flex-col w-[50%] p-8 gap-8 text-black pt-[150px] pl-[80px]"}>
             <div className="flex flex-col w-[50%] ">
               <button onClick={handleButtonClick}
-                className="bg-[#272727] text-white rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-[#333333]"
+                className={isDarkMode ? "bg-[#272727] text-white rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-[#333333]" : "bg-[#bdbdbd] text-black rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-[#333333]"}
               >
                 Escolher arquivos
               </button>
