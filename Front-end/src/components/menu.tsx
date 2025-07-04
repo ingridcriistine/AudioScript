@@ -68,7 +68,9 @@ export const Menu = () => {
         <>
             <div className="bg-[#272727] items-center flex justify-between text-amber-50 w-full h-20 shadow-lg shadow-gray-900/50 z-10 p-6 fixed top-0 left-0">
                 <div className="flex">
-                    <Image src={Logo} alt={"Logo"} className="w-[180px]" />
+                    <Link href={ROUTES.home} className="flex gap-2">
+                        <Image src={Logo} alt={"Logo"} className="w-[180px]" />
+                    </Link>          
                 </div>
                 <div className="flex items-center gap-20">
                     <h1>{userName}</h1>

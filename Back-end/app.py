@@ -1,24 +1,27 @@
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import random
-import smtplib
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-import os
-from dotenv import load_dotenv
-import mysql.connector
-from werkzeug.utils import secure_filename
-from Conversor.main import transform_mp4_to_mp3
-from Database.conection import connect_to_mysql, insert_file_into_mysql, attach_file_on_folder_mysql
-from CreatePdf.main import create_pdf
-from AwsS3Operations.main import upload_file_to_s3, download_file_from_s3, delete_file_from_s3
-from Transcription.main import transcribe_audio
 from datetime import datetime
 import logging
+import random
+import os
+
+from dotenv import load_dotenv
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+import mysql.connector
+import smtplib
+from werkzeug.utils import secure_filename
+
+from AwsS3Operations.main import upload_file_to_s3, download_file_from_s3, delete_file_from_s3
+from Conversor.main import transform_mp4_to_mp3
+from CreatePdf.main import create_pdf
+from Database.conection import connect_to_mysql, insert_file_into_mysql, attach_file_on_folder_mysql
+from Transcription.main import transcribe_audio
 from routes.login import login_bp
 from routes.cadastraFunc import getFunc_bp
 from routes.cadastraFunc import getAllFunc_bp
 from routes.cadastraFunc import cadastraFunc_bp
+
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
@@ -34,7 +37,7 @@ db_config = {
     'port': 3307,
     'user': 'root',
     'password': 'root',
-    'database': 'AudioScript'
+    'database': 'audioscript'
 }
 
 logging.basicConfig(
@@ -52,7 +55,6 @@ app.register_blueprint(cadastraFunc_bp)
 app.register_blueprint(getAllFunc_bp)
 
 # chamando login
-
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
@@ -69,9 +71,19 @@ def upload_files():
         raise FileNotFoundError('No file provided')
     for f in files:
         filename = secure_filename(f.filename)
-        _, ext = os.path.splitext(filename)
-        if ext != ".mp3" and ext != ".mp4":
-            raise TypeError(f'File type should be mp3 or mp4 not {ext}')
+        _, extension = os.path.splitext(filename)
+        if extension == ".mp4":
+            mp4_file = os.path.join("mp4-files", filename)
+            f.save(mp4_file)
+            current_path = os.getcwd()
+            mp4_path = rf"{current_path}/{mp4_file}"
+            transform_mp4_to_mp3(mp4_path)
+            logging.info("Mp4 file transformed into mp3")
+            continue
+
+        if extension != ".mp3" and extension != ".mp4":
+            raise TypeError(f'File type should be mp3 or mp4 not {extension}')
+        
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         f.save(filepath)
         logging.info(f'file saved on /{UPLOAD_FOLDER}/{f.filename}')
@@ -101,10 +113,8 @@ def upload_files():
         logging.info(f"File '{filename_on_db_and_aws}' succesfully inserted into table Arquivo")
 
     if restricted == "sim":
-        if create_private_folder():
-            logging.info('Private folder sucesfully created on MySQL')
-        if attachment_file_folder(filename_on_db_and_aws, 'pasta_privada'):
-            logging.info(f'File {filename} attached to folder')
+        attach_file_on_folder_mysql(filename_on_db_and_aws, 'pasta_privada')
+        logging.info(f'File {filename} attached to folder')
 
     for filename in os.listdir(UPLOAD_FOLDER):
         file_path = os.path.join(UPLOAD_FOLDER, filename)
@@ -223,6 +233,74 @@ def enviar_email_com_dados(nome_empresa, nome_admin, email, codigo_empresa, codi
         print("E-mail enviado com sucesso")
     except Exception as e:
         print("Erro ao enviar e-mail:", e)
+
+
+@app.route('/api/getArquivos', methods=['GET'])
+def get_arquivos():
+    empresa_id = request.args.get("empresaId")
+    user_id = request.args.get("userId")
+
+    if not empresa_id or not user_id:
+        return jsonify({"error": "Parâmetros 'empresaId' e 'userId' são obrigatórios"}), 400
+
+    try:
+        connection = connect_to_mysql()
+        cursor = connection.cursor(dictionary=True)
+
+        query = """
+            SELECT id, Nome, Data
+            FROM Arquivo
+            WHERE Fk_Empresa_Id = %s AND Fk_Employer_Id = %s
+            ORDER BY Data DESC
+        """
+        cursor.execute(query, (empresa_id, user_id))
+        arquivos = cursor.fetchall()
+
+        return jsonify(arquivos), 200
+
+    except mysql.connector.Error as err:
+        print("Erro ao buscar arquivos:", err)
+        return jsonify({"error": "Erro ao buscar arquivos no banco"}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+
+@app.route('/api/getPastas', methods=['GET'])
+def get_pastas():
+    empresa_id = request.args.get("empresaId")
+    user_id = request.args.get("userId")
+
+    if not empresa_id or not user_id:
+        return jsonify({"error": "Parâmetros 'empresaId' e 'userId' são obrigatórios"}), 400
+
+    try:
+        connection = connect_to_mysql()
+        cursor = connection.cursor(dictionary=True)
+
+        query = """
+            SELECT id, nome
+            FROM Pasta
+            WHERE Fk_Empresa_Id = %s AND Fk_Employer_Id = %s
+        """
+        cursor.execute(query, (empresa_id, user_id))
+        pastas = cursor.fetchall()
+
+        return jsonify({"results": pastas}), 200
+
+    except mysql.connector.Error as err:
+        print("Erro ao buscar pastas:", err)
+        return jsonify({"error": "Erro ao buscar pastas"}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
