@@ -14,9 +14,17 @@ export default function Colaboradores() {
     const [nomeColaborador, setNomeColaborador] = useState("");
     const [codColaborador, setCodColaborador] = useState("");
     const [emailColaborador, setEmailColaborador] = useState("");
-    const idAdm = localStorage.getItem('Id');
     const [error, setError] = useState<boolean>(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [termoBusca, setTermoBusca] = useState("");
+    const [idAdm, setIdAdm] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const storedId = localStorage.getItem('Id');
+            setIdAdm(storedId);
+        }
+    }, []);
 
     useEffect(() => {
         const updateTheme = () => {
@@ -66,8 +74,10 @@ export default function Colaboradores() {
                 setLoading(false);
             }
         };
+
         fetchData();
     }, [idAdm]);
+
 
 
     const Cadastrar = async () => {
@@ -92,17 +102,27 @@ export default function Colaboradores() {
                 setCodColaborador("")
                 setNomeColaborador("")
                 setEmailColaborador("")
-                alert(result.message);
+                // alert(result.message);
+                alert("Erro ao cadastrar funcionário.")
             } else {
                 setError(false);
                 setCodColaborador("")
                 setNomeColaborador("")
                 setEmailColaborador("")
+                window.location.reload();
             }
         } catch {
 
         }
     }
+
+    const colaboradoresFiltrados = todosColaboradores.filter((colaborador) =>
+        colaborador.Nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
+        String(colaborador.CodigoFunc).toLowerCase().includes(termoBusca.toLowerCase()) ||
+        colaborador.Email.toLowerCase().includes(termoBusca.toLowerCase())
+    );
+
+
     return (
         <div className={isDarkMode ? "bg-[#181717] z-0 text-white" : "bg-white z-0 text-black"}>
             <Menu />
@@ -115,9 +135,13 @@ export default function Colaboradores() {
                         <div className="flex w-[50%] relative">
                             <input
                                 type="text"
-                                className="flex border rounded-sm w-full  h-9 pl-10 placeholder:opacity-60"
+                                className="flex border rounded-sm w-full h-9 pl-10 placeholder:opacity-60"
                                 placeholder="Pesquisar colaborador"
+                                value={termoBusca}
+                                onChange={(e) => setTermoBusca(e.target.value)}
                             />
+
+
                             <button
                                 type="button"
                                 className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-transparent border-none cursor-pointer"
@@ -143,9 +167,9 @@ export default function Colaboradores() {
                             <span className={isDarkMode ? "flex bg-[#272725] rounded-sm p-2 w-[40%] h-8 items-center font-bold" : "font-bold bg-[#bdbdbd] rounded-sm p-2 w-[40%] h-8 items-center"}>Email</span>
                         </div>
 
-                        {todosColaboradores.map((colaborador) => (
+                        {colaboradoresFiltrados.map((colaborador, index) => (
                             <Colaborador
-                                key={colaborador.Id}
+                                key={colaborador.Id ?? `${colaborador.CodigoFunc}-${index}`}
                                 CodigoFunc={colaborador.CodigoFunc}
                                 Nome={colaborador.Nome}
                                 Email={colaborador.Email}
@@ -156,7 +180,7 @@ export default function Colaboradores() {
 
                 {modal && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-sm text-white">
-                        <div className={isDarkMode ? "bg-zinc-800 text-white p-8 rounded-lg shadow-lg flex items-center justify-center flex-col" : "bg-white p-8 rounded-lg shadow-lg flex items-center justify-center flex-col text-black" }>
+                        <div className={isDarkMode ? "bg-zinc-800 text-white p-8 rounded-lg shadow-lg flex items-center justify-center flex-col" : "bg-white p-8 rounded-lg shadow-lg flex items-center justify-center flex-col text-black"}>
                             <div className="p-2 flex flex-col w-96">
                                 <h2 className="text-xl font-semibold mb-4">Novo Colaborador</h2>
                                 <form className="flex flex-col">

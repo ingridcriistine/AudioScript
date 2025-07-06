@@ -26,8 +26,8 @@ def connect_to_mysql():
             user='root',
             password='root',
             host="127.0.0.1",
-            port=3307,
-            database='audioscript'
+            port=3306,
+            database='AudioScript'
         )
         
     except mysql.connector.Error as e:

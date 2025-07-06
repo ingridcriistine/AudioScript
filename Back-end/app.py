@@ -1,8 +1,9 @@
+import base64
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import random
 import smtplib
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
@@ -19,6 +20,7 @@ from routes.login import login_bp
 from routes.cadastraFunc import getFunc_bp
 from routes.cadastraFunc import getAllFunc_bp
 from routes.cadastraFunc import cadastraFunc_bp
+from fastapi.responses import FileResponse
 
 load_dotenv()
 HOST = os.getenv("HOSTAWSRDS")
@@ -31,10 +33,10 @@ EMAIL_PASS = os.getenv("EMAIL_PASS")
 
 db_config = {
     'host': 'localhost',
-    'port': 3307,
+    'port': 3306,
     'user': 'root',
     'password': 'root',
-    'database': 'audioscript'
+    'database': 'AudioScript'
 }
 
 logging.basicConfig(
@@ -111,11 +113,18 @@ def upload_files():
         if os.path.isfile(file_path):
             os.remove(file_path) 
             logging.info(f"Audio file deleted: {filename}")
+            
+    with open(f"{filename_on_db_and_aws}.pdf", "rb") as f:
+        encoded_pdf = base64.b64encode(f.read()).decode('utf-8')
+    data_url = f"data:application/pdf;base64,{encoded_pdf}"
 
     os.remove(f"{filename_on_db_and_aws}.pdf")
     logging.info(f"File deleted: {filename_on_db_and_aws}.pdf")
-    return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restricted, "file_name": user_file_name})
+    return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restricted, "file_name": user_file_name, "pdfUrl": data_url})
 
+@app.route("/<filename>")
+def serve_pdf(filename):
+    return send_from_directory("", filename)
 
 @app.route('/api/criar-empresa', methods=['POST'])
 def criar_empresa():

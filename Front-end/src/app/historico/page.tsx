@@ -132,7 +132,7 @@ export default function Historico() {
 
                     <h3 className="text-[18px] mt-8 mb-8">Arquivos</h3>
                     <div className="flex gap-5 mb-8">
-                        <Dropdown value={selectFormat} onChange={(e) => setSelectFormat(e.value)} options={formats} optionLabel="name" placeholder="Formato" className={isDarkMode ? "p-1 pr-3 pl-3 border-2 border-white text-white rounded w-[200px] text-[14px]" : "p-1 pr-3 pl-3 border-2 border-black text-black rounded w-[200px] text-[14px]"} panelClassName="custom-dropdown-panel" />
+                        {/* <Dropdown value={selectFormat} onChange={(e) => setSelectFormat(e.value)} options={formats} optionLabel="name" placeholder="Formato" className={isDarkMode ? "p-1 pr-3 pl-3 border-2 border-white text-white rounded w-[200px] text-[14px]" : "p-1 pr-3 pl-3 border-2 border-black text-black rounded w-[200px] text-[14px]"} panelClassName="custom-dropdown-panel" /> */}
                         <div className={isDarkMode ? "flex justify-between p-1 pr-3 pl-3 border-2 border-white text-white rounded w-[200px] text-[14px] cursor-pointer" : "flex justify-between p-1 pr-3 pl-3 border-2 border-black text-black rounded w-[200px] text-[14px] cursor-pointer"}>
                             <Calendar
                                 value={date}

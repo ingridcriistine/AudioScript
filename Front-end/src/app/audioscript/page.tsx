@@ -28,6 +28,8 @@ export default function Audioscript() {
     const [email, setEmail] = useState("");
     const [company, setCompany] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showTerms, setShowTerms] = useState(false);
+
     const [isDarkMode, setIsDarkMode] = useState(() => {
         if (typeof window !== "undefined") {
             try {
@@ -81,7 +83,6 @@ export default function Audioscript() {
             setLoading(false);
         }
     };
-
 
     return (
         <div className={isDarkMode ? "bg-[#181717]" : "bg-white"}>
@@ -148,7 +149,7 @@ export default function Audioscript() {
                 </div>
             </div>
 
-            <div className="relative flex justify-between border-2 border-gray-950">
+            <div id="form-section" className="relative flex justify-between border-2 border-gray-950">
                 <div className="relative w-[50%]">
                     <Image src={Forms} alt={"Capa"} className="object-cover w-full h-full" />
 
@@ -171,6 +172,7 @@ export default function Audioscript() {
                             className={isDarkMode ? "bg-[#272727] p-1 pl-4 mt-2" : "bg-white p-1 pl-4 mt-2 border-1 border-gray-950"}
                             value={company}
                             onChange={(e) => setCompany(e.target.value)}
+                            required
                         />
 
                         <label className="mt-4">E-mail</label>
@@ -182,14 +184,17 @@ export default function Audioscript() {
                             required
                         />
 
-                        <div className="mt-2 flex flex-row items-center gap-2 text-[15px]">
+                        <div className="mt-4 flex flex-row items-center gap-2 text-[15px]">
                             <input
                                 type="checkbox"
-                                className={isDarkMode ? "bg-[#272727] p-1 pl-4 mt-2" : "bg-white p-1 pl-4 mt-2 border-1 border-gray-950"}
+                                className={isDarkMode ? "bg-[#272727] p-1 pl-4" : "bg-white p-1 pl-4 border-1 border-gray-950"}
                                 required
                             />
-                            <label className="mt-4">Li e concordo com os <span className="cursor-pointer font-bold underline">termos de uso.</span></label>
+                            <label className="">
+                                Li e concordo com os <span className="cursor-pointer font-bold underline" onClick={() => setShowTerms(true)}>termos de uso</span>.
+                            </label>
                         </div>
+
                     </div>
 
                     <button
@@ -202,6 +207,26 @@ export default function Audioscript() {
                 </form>
 
             </div>
+
+            {showTerms && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm text-justify">
+                        <div className={isDarkMode ? "w-96 bg-zinc-800 text-white p-8 rounded-lg shadow-lg flex items-center justify-center flex-col" : "w-96 text-black bg-white p-8 rounded-lg shadow-lg flex items-center justify-center flex-col"}>
+                            <h2 className="text-xl font-bold mb-4">Termos de Uso</h2>
+                            <p className="text-sm mb-6">
+                                Ao utilizar este serviço, você concorda com os seguintes termos: seus dados serão armazenados com segurança,
+                                e você será responsável pelas informações fornecidas. Nenhum conteúdo enviado será compartilhado com terceiros.
+                                Reservamo-nos o direito de atualizar estes termos a qualquer momento.
+                            </p>
+                            <div className="flex justify-end">
+                                <button onClick={() => setShowTerms(false)} className="bg-amber-600 text-white px-4 py-2 rounded hover:opacity-80 cursor-pointer">
+                                    Fechar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+                                  
         </div>
     );
 }
