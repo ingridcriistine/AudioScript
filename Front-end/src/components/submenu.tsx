@@ -16,6 +16,7 @@ export const Submenu = () => {
     const [senha, setSenhaArquivo] = useState<string>();
     const router = useRouter();
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         const updateTheme = () => {
@@ -36,6 +37,20 @@ export const Submenu = () => {
         window.addEventListener("themeChanged", updateTheme);
 
         return () => window.removeEventListener("themeChanged", updateTheme);
+    }, []);
+
+    useEffect(() => {
+        const storedAdmin = localStorage.getItem("IsAdmin");
+
+        if (storedAdmin !== null) {
+            try {
+                const parsedAdmin = JSON.parse(storedAdmin);
+                setIsAdmin(parsedAdmin === true || parsedAdmin === 1);
+            } catch (err) {
+                console.error("Erro ao verificar admin:", err);
+                setIsAdmin(false);
+            }
+        }
     }, []);
 
     const handleConfirm = () => {
@@ -79,12 +94,15 @@ export const Submenu = () => {
                             <span className="text-amber-50 hover:border-b border-amber-50 cursor-pointer">Arquivos Secretos</span>
                         </h2>
                     </div>
-                    <div className="flex p-5">
-                        <Link href={ROUTES.cola} className="flex items-center gap-2">
-                            <Image src={iconHome} alt="colaboradores" width={20} height={20} />
-                            <span className="text-amber-50 hover:border-b border-amber-50">Colaboradores</span>
-                        </Link>
-                    </div>
+                    {isAdmin && (
+                        <div className="flex p-5">
+                            <Link href={ROUTES.cola} className="flex items-center gap-2">
+                                <Image src={iconHome} alt="colaboradores" width={20} height={20} />
+                                <span className="text-amber-50 hover:border-b border-amber-50">Colaboradores</span>
+                            </Link>
+                        </div>
+                    )}
+
                 </div>
             </div>
 

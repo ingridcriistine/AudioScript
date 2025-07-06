@@ -29,7 +29,7 @@ export default function Home() {
         },
         body: JSON.stringify({
           codEmpresa: codEmpresa.trim(),
-          codFuncionario: codFuncionario.trim(),
+          codFuncionario: codFuncionario.trim()
         }),
       });
 
@@ -47,6 +47,9 @@ export default function Home() {
       localStorage.setItem("Codigo", result.usuario.Codigo);
       localStorage.setItem("CodigoFunc", result.usuario.CodigoFunc);
       localStorage.setItem("Id", result.usuario.Id);
+      localStorage.setItem("IsAdmin", JSON.stringify(result.usuario.Is_admin)); 
+
+      console.log("Dados do usuário:", result.usuario);
 
 
       console.log(result.usuario.id)

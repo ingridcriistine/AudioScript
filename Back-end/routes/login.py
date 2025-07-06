@@ -12,6 +12,7 @@ def autenticar():
     dados = request.json
     codigoEmpresa = dados.get('codEmpresa')
     codigoFunc = dados.get('codFuncionario')
+    Is_admin = dados.get('Is_admin')
 
     print(codigoFunc)
     print(codigoEmpresa)
@@ -27,7 +28,7 @@ def autenticar():
 
         cursor.execute(
             """
-            SELECT Employer.CodigoFunc, Empresa.Codigo, Employer.Id 
+            SELECT Employer.CodigoFunc, Empresa.Codigo, Employer.Id, Employer.Is_admin
             FROM Employer 
             JOIN Empresa ON Employer.Fk_Empresa_Id = Empresa.Id 
             WHERE Employer.CodigoFunc = %s AND Empresa.Codigo = %s;

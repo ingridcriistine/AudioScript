@@ -19,7 +19,6 @@ if (typeof window !== "undefined") {
       typeof args[0] === "string" &&
       args[0].includes("Warning: Text content did not match")
     ) {
-      // Ignora esse warning específico
       return;
     }
     originalError(...args);
