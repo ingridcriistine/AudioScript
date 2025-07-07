@@ -21,6 +21,7 @@ from routes.login import login_bp
 from routes.cadastraFunc import getFunc_bp
 from routes.cadastraFunc import getAllFunc_bp
 from routes.cadastraFunc import cadastraFunc_bp
+from routes.historico import criar_pasta_bp, get_arquivos_bp, get_pastas_bp
 
 
 load_dotenv()
@@ -53,8 +54,10 @@ app.register_blueprint(login_bp)
 app.register_blueprint(getFunc_bp) 
 app.register_blueprint(cadastraFunc_bp) 
 app.register_blueprint(getAllFunc_bp)
+app.register_blueprint(criar_pasta_bp)
+app.register_blueprint(get_arquivos_bp)
+app.register_blueprint(get_pastas_bp)
 
-# chamando login
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
@@ -248,14 +251,16 @@ def get_arquivos():
         cursor = connection.cursor(dictionary=True)
 
         query = """
-            SELECT id, Nome, Data
+            SELECT 
+                id, 
+                Nome, 
+                DataTranscricao
             FROM Arquivo
             WHERE Fk_Empresa_Id = %s AND Fk_Employer_Id = %s
-            ORDER BY Data DESC
+            ORDER BY DataTranscricao DESC
         """
         cursor.execute(query, (empresa_id, user_id))
         arquivos = cursor.fetchall()
-
         return jsonify(arquivos), 200
 
     except mysql.connector.Error as err:
@@ -282,11 +287,11 @@ def get_pastas():
         cursor = connection.cursor(dictionary=True)
 
         query = """
-            SELECT id, nome
-            FROM Pasta
-            WHERE Fk_Empresa_Id = %s AND Fk_Employer_Id = %s
-        """
-        cursor.execute(query, (empresa_id, user_id))
+                    SELECT id, nome
+                    FROM Pasta
+                    WHERE Fk_Empresa_Id = %s 
+                """
+        cursor.execute(query, (empresa_id,))
         pastas = cursor.fetchall()
 
         return jsonify({"results": pastas}), 200

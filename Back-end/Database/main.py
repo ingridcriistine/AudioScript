@@ -7,7 +7,6 @@ if __name__ == "__main__":
 
     cursor._connection.commit()
     
-    print(cnx.connection_id)
 
     # for statement in statements:
     #     cursor.execute(statement)

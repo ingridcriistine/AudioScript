@@ -16,6 +16,7 @@ import './custom.css';
 import Modal from '@/components/modal';
 
 interface IData {
+    id: number,
     nome : string;
 }
 
@@ -68,13 +69,14 @@ export default function Historico() {
 
     const CriarPasta = async () => {
         try {
-            const response = await fetch('http://localhost:8080/cadastrarFunc', {
+            const response = await fetch('http://localhost:5000/api/criarPasta', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    nomePasta: nomePasta
+                    nomePasta: nomePasta,
+                    empresaId: empresaId
                 }),
             });
 
@@ -97,13 +99,13 @@ export default function Historico() {
 
     useEffect(() => {
         const loadArquivos = async () => {
-            const res = await fetch(`http://localhost:8080/api/getArquivos?empresaId=${empresaId}&userId=${userId}`);
+            const res = await fetch(`http://localhost:5000/api/getArquivos?empresaId=${empresaId}&userId=${userId}`);
             const data = await res.json();
             setArquivos(data.results);
         }
 
         const loadPastas = async () => {
-            const res = await fetch(`http://localhost:8080/api/getPastas?empresaId=${empresaId}&userId=${userId}`);
+            const res = await fetch(`http://localhost:5000/api/getPastas?empresaId=${empresaId}&userId=${userId}`);
             const data = await res.json();
             setPastas(data.results);
         }
@@ -126,7 +128,10 @@ export default function Historico() {
 
                     {pastas.map((item) => {
                         return (
-                            <Pasta title={item.nome}/>
+                            <Pasta 
+                                key={item.id} 
+                                title={item.nome}
+                            />
                         )
                     })}
 
@@ -146,7 +151,10 @@ export default function Historico() {
                     <div className="flex flex-wrap gap-5">
                         {arquivos.map((item) => {
                             return (
-                                <Arquivo title={item.nome}/>
+                                <Arquivo 
+                                    key={item.id} 
+                                    title={item.nome}
+                                />
                             )
                         })}
                     </div>

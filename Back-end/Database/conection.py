@@ -85,8 +85,3 @@ def attach_file_on_folder_mysql(filename: str, foldername: str):
     cnx.commit()
     cnx.close()
 
-
-if __name__=="__main__":
-    cnx = connect_to_mysql()
-    cursor = cnx.cursor()
-    print(cnx.connection_id)

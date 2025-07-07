@@ -46,8 +46,6 @@ def getFunc(userId):
         conn = connect_to_mysql()
         cursor = conn.cursor(dictionary=True)
 
-        print(userId)
-
         cursor.execute("""SELECT Nome FROM Employer WHERE Id = %s""", (userId,))
         result = cursor.fetchone()
         cursor.close()
@@ -79,15 +77,12 @@ def cadastrar():
         conn = connect_to_mysql()
         cursor = conn.cursor(dictionary=True)
 
-        print(idAdm)
         cursor.execute(
             "SELECT Fk_Empresa_Id FROM Employer WHERE Id = %s",
             (idAdm,)
         )
         
         user_data = cursor.fetchone()
-
-        print(user_data)
 
         if not user_data or 'Fk_Empresa_Id' not in user_data or user_data['Fk_Empresa_Id'] is None:
             cursor.close()
