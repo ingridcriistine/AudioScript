@@ -14,10 +14,36 @@ export const Submenu = () => {
 
     const [modal, setModal] = useState(false);
     const [senha, setSenhaArquivo] = useState<string>();
+    const [empresaCodigo, setEmpresaCodigo] = useState<string>("");
     const router = useRouter();
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     useEffect(() => {
+        const fetchUserData = () => {
+            const userId = localStorage.getItem("Id");
+            if (!userId) return;
+
+            fetch(`http://localhost:5000/user/${userId}`, {
+                method: "GET",
+                headers: {
+                "Content-Type": "application/json",
+                },
+            })
+            .then((res) => {
+                if (!res.ok) throw new Error("Erro ao buscar funcionário");
+                return res.json();
+            })
+            .then((data) => {
+                setEmpresaCodigo(data.empresaCodigo); 
+                console.log(empresaCodigo);
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+        };
+
+        fetchUserData();
+
         const updateTheme = () => {
             const storedTheme = localStorage.getItem('theme');
             console.log("Evento 'themeChanged' capturado. Novo tema:", storedTheme);
@@ -39,7 +65,7 @@ export const Submenu = () => {
     }, []);
 
     const handleConfirm = () => {
-        if (senha === "senha") {
+        if (senha === empresaCodigo) {
             setModal(false);
             window.location.href = ROUTES.arqvScrt;
         } else {

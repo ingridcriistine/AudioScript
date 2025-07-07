@@ -47,13 +47,18 @@ def getFunc(userId):
         conn = connect_to_mysql()
         cursor = conn.cursor(dictionary=True)
 
-        cursor.execute("""SELECT Nome FROM Employer WHERE Id = %s""", (userId,))
+        print(userId)
+
+        cursor.execute("""SELECT Employer.Nome, Empresa.Codigo FROM Employer INNER JOIN Empresa ON Empresa.Id = Employer.Fk_Empresa_Id WHERE Employer.Id = %s""", (userId,))
         result = cursor.fetchone()
         cursor.close()
         conn.close()
 
         if result:
-            return jsonify({"nome": result["Nome"]})
+            return jsonify({
+                "Nome": result["Nome"],
+                "empresaCodigo": result["Codigo"]
+            })
         else:
             print("Usuário não encontrado.")
             return jsonify({"erro": "Usuário não encontrado"}), 404
@@ -69,7 +74,7 @@ def cadastrar():
     nomeColaborador = dados.get('nomeColaborador')
     codColaborador = int(dados.get('codColaborador'))
     emailColaborador = dados.get('emailColaborador')
-    idAdm = int(dados.get('idAdm')) # <--- **Pegue o userId enviado do frontend**
+    idAdm = int(dados.get('idAdm')) #
     
     if not nomeColaborador or not codColaborador or not emailColaborador or not idAdm:
         return jsonify({"erro": "Campos obrigatórios não enviados"}), 400

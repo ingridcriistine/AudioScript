@@ -11,8 +11,8 @@ import MoonWhite from  "@/assets/moon-white.png";
 import Logo from "@/assets/Logo.png";
 
 export const Menu = () => {
-const [userName, setUserName] = useState('Carregando...');
-
+    
+    const [userName, setUserName] = useState('Carregando...');
     useEffect(() => {
         const userId = localStorage.getItem('Id');
 
@@ -24,13 +24,13 @@ const [userName, setUserName] = useState('Carregando...');
             "Content-Type": "application/json",
             },
         })
-            .then((res) => {
+        .then((res) => {
+                console.log(res);
                 if (!res.ok) throw new Error('Erro ao buscar funcionário');
                 return res.json();
             })
             .then((data) => {
-                console.log("Nome do funcionário:", data.nome);
-                setUserName(data.nome); // supondo que você tenha um useState para exibir
+                setUserName(data.Nome);
             })
             .catch((err) => {
                 console.error(err);
@@ -73,7 +73,7 @@ const [userName, setUserName] = useState('Carregando...');
                     </Link>          
                 </div>
                 <div className="flex items-center gap-20">
-                    <h1>Nome pessoal</h1>
+                    <h1>{userName}</h1>
                     <button className="w-[25px] cursor-pointer" onClick={toggleTheme}>
                         <Image src={isDarkMode ? SunWhite : MoonWhite} alt="theme icon" />
                     </button>
