@@ -12,6 +12,7 @@ def autenticar():
     dados = request.json
     codigoEmpresa = dados.get('codEmpresa')
     codigoFunc = dados.get('codFuncionario')
+    Is_admin = dados.get('Is_admin')
 
     if not codigoEmpresa or not codigoFunc:
         return jsonify({"erro": "Campos obrigatórios não enviados"}), 400

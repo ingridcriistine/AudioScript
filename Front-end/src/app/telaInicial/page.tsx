@@ -20,6 +20,7 @@ export default function TelaInicial() {
   const [filename, setFilename] = useState<string>("");
   const [modal, setModal] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const updateTheme = () => {
@@ -112,6 +113,7 @@ export default function TelaInicial() {
       if (contentType && contentType.includes('application/json')) {
         const result = await response.json();
         console.log("json result: " + result)
+        setPdfUrl(result.pdfUrl);
       }
       else {
         const text = await response.text()
@@ -132,7 +134,7 @@ export default function TelaInicial() {
           <div className={isDarkMode ? "flex flex-col w-[50%] p-8 gap-8 text-white pt-[150px] pl-[80px]" : "flex flex-col w-[50%] p-8 gap-8 text-black pt-[150px] pl-[80px]"}>
             <div className="flex flex-col w-[50%] ">
               <button onClick={handleButtonClick}
-                className="bg-[#272727] text-white rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-[#333333]"
+                className={isDarkMode ? "bg-[#272727] text-white rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-[#333333]" : "bg-[#bdbdbd] text-black rounded-xl p-4 flex items-center justify-center cursor-pointer hover:bg-[#333333]"}
               >
                 Escolher arquivos
               </button>
@@ -162,7 +164,7 @@ export default function TelaInicial() {
               <label htmlFor="">Nome do arquivo transcrito</label>
               <input
                 type="text"
-                className={isDarkMode ? "flex text-white border rounded-sm p-1 border-amber-50 w-[50%]" : "flex text-white border rounded-sm p-1 border-black w-[50%]"}
+                className={isDarkMode ? "flex text-white border rounded-sm p-1 border-amber-50 w-[50%]" : "flex text-black border rounded-sm p-1 border-black w-[50%]"}
                 id="customFileName"
               />
             </div>
@@ -200,9 +202,16 @@ export default function TelaInicial() {
             </button>
           </div>
 
-          <div className="w-[50%] flex pt-[150px] p-4 ">
-            <div className={isDarkMode ? "bg-white w-[80%]" : "bg-white w-[80%] border-2 border-black" }></div>
+          <div className={isDarkMode ? "bg-white w-[80%] h-[600px] mr-16 mt-32" : "bg-white w-[80%] h-[600px] border-2 border-black mr-16 mt-32"}>
+            {pdfUrl ? (
+              <iframe src={pdfUrl} className="w-full h-full" />
+            ) : (
+              <p className="text-center mt-10">Nenhum arquivo transcrito.</p>
+            )}
           </div>
+
+
+
         </div>
 
       </div>

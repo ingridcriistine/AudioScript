@@ -2,6 +2,10 @@ import logging
 import os 
 from typing import Optional
 
+import logging
+import os 
+from typing import Optional
+
 from dotenv import load_dotenv
 from errno import errorcode
 import logging
@@ -50,6 +54,7 @@ def insert_file_into_mysql(
         empresa_id: int
     ):
     cnx = connect_to_mysql()
+    cnx = connect_to_mysql()
     cursor = cnx.cursor()
     query_sql = """USE audioscript"""
     cursor.execute(query_sql)
@@ -60,19 +65,29 @@ def insert_file_into_mysql(
     cursor.execute(query_sql, (nome, data_transcricao, 1, 1))
     cnx.commit()
     cnx.close()
+    cnx.close()
     logging.info(f"File '{nome}' succesfully inserted into table Arquivo")
 
+
+def attach_file_on_folder_mysql(filename: str, foldername: str):
+    cnx = connect_to_mysql()
 
 def attach_file_on_folder_mysql(filename: str, foldername: str):
     cnx = connect_to_mysql()
     cursor = cnx.cursor()
     query_sql = "SELECT id FROM Pasta WHERE Nome = %s"
     cursor.execute(query_sql, (foldername,))
+    query_sql = "SELECT id FROM Pasta WHERE Nome = %s"
+    cursor.execute(query_sql, (foldername,))
     result = cursor.fetchone()
     if result == None:
         query_sql = "INSERT INTO Pasta (Nome, Is_private) VALUES (%s, 1)"
         cursor.execute(query_sql, (foldername,))
+        query_sql = "INSERT INTO Pasta (Nome, Is_private) VALUES (%s, 1)"
+        cursor.execute(query_sql, (foldername,))
         cnx.commit()
+        query_sql = "SELECT id FROM Pasta WHERE Nome = %s"
+        cursor.execute(query_sql, (foldername,))
         query_sql = "SELECT id FROM Pasta WHERE Nome = %s"
         cursor.execute(query_sql, (foldername,))
         pasta_id = cursor.fetchone()[0]
