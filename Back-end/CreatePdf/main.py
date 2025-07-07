@@ -1,10 +1,10 @@
+from assemblyai import Transcript
+from dotenv import load_dotenv
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.pdfgen import canvas
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-from dotenv import load_dotenv
-from assemblyai import Transcript
 
 styles = getSampleStyleSheet()
 title_style = ParagraphStyle(

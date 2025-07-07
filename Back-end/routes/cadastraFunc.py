@@ -1,5 +1,6 @@
 # routes/login.py
 from flask import Blueprint, request, jsonify
+
 from Database.conection import connect_to_mysql
 
 cadastraFunc_bp = Blueprint('cadastraFunc', __name__, url_prefix='/cadastraFunc')

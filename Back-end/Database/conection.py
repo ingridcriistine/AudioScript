@@ -4,12 +4,13 @@ from typing import Optional
 
 from dotenv import load_dotenv
 from errno import errorcode
+import logging
 import mysql.connector
 from mysql.connector import errorcode
 import mysql.connector.cursor
-import logging
 
 load_dotenv()
+
 HOST = os.getenv("HOSTAWSRDS")
 USER = os.getenv("USERAWSRDS")
 PASSWORD = os.getenv("PWDAWSRDS")
@@ -19,6 +20,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S' 
 )
+
 
 def connect_to_mysql():
     try:

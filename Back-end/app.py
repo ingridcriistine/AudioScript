@@ -25,6 +25,7 @@ from routes.historico import criar_pasta_bp, get_arquivos_bp, get_pastas_bp
 
 
 load_dotenv()
+
 HOST = os.getenv("HOSTAWSRDS")
 USER = os.getenv("USERAWSRDS")
 PASSWORD = os.getenv("PWDAWSRDS")
@@ -129,7 +130,6 @@ def upload_files():
     logging.info(f"File deleted: {filename_on_db_and_aws}.pdf")
     return jsonify({"message": f"{len(files)} arquivo(s) recebidos","restrito": restricted, "file_name": user_file_name})
 
-
 @app.route('/api/criar-empresa', methods=['POST'])
 def criar_empresa():
     data = request.get_json()
@@ -185,8 +185,6 @@ def criar_empresa():
             cursor.close()
         if connection and connection.is_connected():
             connection.close()
-
-
 
 def enviar_email_com_dados(nome_empresa, nome_admin, email, codigo_empresa, codigo_funcionario):
     remetente = EMAIL_USER
@@ -255,9 +253,13 @@ def get_arquivos():
                 id, 
                 Nome, 
                 DataTranscricao
-            FROM Arquivo
-            WHERE Fk_Empresa_Id = %s AND Fk_Employer_Id = %s
-            ORDER BY DataTranscricao DESC
+            FROM 
+                Arquivo
+            WHERE 
+                Fk_Empresa_Id = %s 
+                AND Fk_Employer_Id = %s
+            ORDER BY 
+                DataTranscricao DESC
         """
         cursor.execute(query, (empresa_id, user_id))
         arquivos = cursor.fetchall()

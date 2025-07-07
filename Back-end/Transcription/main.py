@@ -1,7 +1,8 @@
-from dotenv import load_dotenv
-import assemblyai as aai
 import os
 from typing import Optional
+
+from dotenv import load_dotenv
+import assemblyai as aai
 
 load_dotenv()
 

@@ -1,6 +1,7 @@
-from flask import Blueprint, request, jsonify
-from Database.conection import connect_to_mysql, attachment_file_folder
 import logging
+from flask import Blueprint, request, jsonify
+
+from Database.conection import connect_to_mysql, attachment_file_folder
 
 
 logging.basicConfig(
